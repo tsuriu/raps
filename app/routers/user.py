@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from pymongo.collection import ReturnDocument
 
 from bson.objectid import ObjectId
-from app.serializers.userSerializers import userResponseEntity, userEntity
+from app.serializers.userSerializers import userResponseEntity, userEntity, userListEntity
 
 from app.database import User
 from .. import schemas, oauth2
@@ -18,10 +18,25 @@ def get_me(user_id: str = Depends(oauth2.require_user)):
     user = userResponseEntity(User.find_one({'_id': ObjectId(str(user_id))}))
     return {"status": "success", "user": user}
 
-@router.get('/all', response_model=schemas.UserResponse)
-def get_me(user_id: str = Depends(oauth2.require_user)):
-    user = userResponseEntity(User.find_one({'_id': ObjectId(str(user_id))}))
-    return {"status": "success", "user": user}
+
+@router.get('/all')
+def get_users(limit: int = 10, page: int = 1, search: str = '', user_id: str = Depends(require_user)):
+    skip = (page - 1) * limit
+    pipeline = [
+        {'$match': {}},
+        {
+            '$skip': skip
+        }, {
+            '$limit': limit
+        }
+    ]
+    
+    users = userListEntity(User.aggregate(pipeline))
+    for user in users:
+        del user["password"]
+    
+    return {'status': 'success', 'results': len(users), 'users':users}
+
 
 @router.put('/updateme/{id}')
 def update_me(id: str, payload: schemas.UserUpdateSchema, user_id: str = Depends(require_user)):
@@ -35,4 +50,14 @@ def update_me(id: str, payload: schemas.UserUpdateSchema, user_id: str = Depends
                             detail=f'No user with this id: {id} found')
         
     return userEntity(updated_user)
-    return None
+
+@router.delete('/{id}')
+def delete_user(id: str, user_id: str = Depends(require_user)):
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Invalid id: {id}")
+    user = User.find_one_and_delete({'_id': ObjectId(id)})
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'No user with this id: {id} found')
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
