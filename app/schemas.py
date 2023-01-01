@@ -49,7 +49,17 @@ class UserResponse(BaseModel):
 
 class FilteredUserResponse(UserBaseSchema):
     id: str
-
+    
+class EventBaseSchema(BaseModel):
+    name: str
+    quantity: int
+    category: str
+    max_buy_quantity: int
+    quota_value: float
+    expire_reserve: str
+    prize_draw_date: datetime | None = None
+    prize_draw_place: str
+    published: bool | None = False    
 
 class PostBaseSchema(BaseModel):
     title: str
