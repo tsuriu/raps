@@ -15,6 +15,7 @@ class UserBaseSchema(BaseModel):
     class Config:
         orm_mode = True
 
+
 class UserUpdateSchema(BaseModel):
     name: str | None = None
     email: str | None = None
@@ -50,8 +51,13 @@ class UserResponse(BaseModel):
 class FilteredUserResponse(UserBaseSchema):
     id: str
     
+    
+########################################################################################
+    
+    
 class EventBaseSchema(BaseModel):
-    name: str
+    owner_id: str
+    description: str
     quantity: int
     category: str
     max_buy_quantity: int
@@ -59,7 +65,53 @@ class EventBaseSchema(BaseModel):
     expire_reserve: str
     prize_draw_date: datetime | None = None
     prize_draw_place: str
-    published: bool | None = False    
+    published: bool = False
+    published_at: datetime | None = None
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+    
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        
+
+class CreateEventSchema(EventBaseSchema):
+    description: ObjectId | None = None   
+    pass
+
+class EventBoughtQuota(BaseModel):
+    event_id: int
+    bought_quantity: int
+    bought_value: float
+    is_resevertion: bool = False
+    buyer_name: str
+    buyer_phne: str
+    purchased_at: datetime | None = None
+        
+    class Config:
+        orm_mode = True
+        
+
+class EventResponse(EventBaseSchema):
+    owner_id: str
+    description: str
+    quantity: int
+    category: str
+    max_buy_quantity: int
+    quota_value: float
+    expire_reserve: str
+    prize_draw_date: datetime | None = None
+    prize_draw_place: str
+    published: bool = False
+    published_at: datetime | None = None
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+
+
+########################################################################################
+
 
 class PostBaseSchema(BaseModel):
     title: str
