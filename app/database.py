@@ -6,7 +6,11 @@ client = mongo_client.MongoClient(settings.DATABASE_URL)
 print('Connected to MongoDB...')
 
 db = client[settings.MONGO_INITDB_DATABASE]
+
 User = db.users
 Post = db.posts
+Event = db.events
+
 User.create_index([("email", pymongo.ASCENDING)], unique=True)
 Post.create_index([("title", pymongo.ASCENDING)], unique=True)
+Event.create_index([("description", pymongo.ASCENDING)], unique=True)
