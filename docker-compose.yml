@@ -1,8 +1,25 @@
 version: '3'
+
 services:
-  mongo:
+
+  rifatu-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rifatu-api
+    env_file:
+      - ./.env
+    ports:
+      - "8000:8000"
+    links:
+      - rifatu-mongo
+    depends_on:
+      - rifatu-mongo
+
+  
+  rifatu-mongo:
     image: mongo:latest
-    container_name: mongo
+    container_name: rifatu-mongo
     env_file:
       - ./.env
     environment:
