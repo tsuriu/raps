@@ -30,7 +30,8 @@ async def create_user(payload: schemas.CreateUserSchema, request: Request):
     payload.password = utils.hash_password(payload.password)
     
     payload.role = 'user'
-    payload.verified = False
+    #HML
+    payload.verified = True
     payload.email = payload.email.lower()
     payload.created_at = datetime.utcnow()
     payload.updated_at = payload.created_at

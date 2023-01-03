@@ -11,15 +11,17 @@ services:
       - ./.env
     ports:
       - "8000:8000"
+    networks:
+      - rifiatu_api
     links:
-      - rifatu-mongo
+      - mongo
     depends_on:
-      - rifatu-mongo
+      - mongo
 
   
-  rifatu-mongo:
-    image: mongo:latest
-    container_name: rifatu-mongo
+  mongo:
+    image: mongo:4.4.18
+    container_name: mongo
     env_file:
       - ./.env
     environment:
@@ -29,7 +31,13 @@ services:
     volumes:
       - mongo:/data/db
     ports:
-      - '6000:27017'
+      - '27017'
+    networks:
+      - rifiatu_api
 
 volumes:
   mongo:
+
+networks:
+  rifiatu_api:
+    driver: bridge
