@@ -56,14 +56,14 @@ class FilteredUserResponse(UserBaseSchema):
     
     
 class RaffleBaseSchema(BaseModel):
-    owner_id: str
-    description: str
+    user: str
+    title: str
     quantity: int
     category: str
     max_buy_quantity: int
     quota_value: float
     expire_reserve: str
-    prize_draw_date: datetime | None = None
+    prize_draw_date: str
     prize_draw_place: str
     published: bool = False
     published_at: datetime | None = None
@@ -78,7 +78,7 @@ class RaffleBaseSchema(BaseModel):
         
 
 class CreateRaffleSchema(RaffleBaseSchema):
-    description: ObjectId | None = None   
+    user: ObjectId | None = None   
     pass
 
 class RaffleBoughtQuota(BaseModel):
@@ -95,14 +95,14 @@ class RaffleBoughtQuota(BaseModel):
         
 
 class RaffleResponse(RaffleBaseSchema):
-    owner_id: str
-    description: str
+    user: str
+    title: str
     quantity: int
     category: str
     max_buy_quantity: int
     quota_value: float
     expire_reserve: str
-    prize_draw_date: datetime | None = None
+    prize_draw_date: str
     prize_draw_place: str
     published: bool = False
     published_at: datetime | None = None
