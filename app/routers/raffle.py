@@ -54,3 +54,27 @@ def get_raffles(limit: int = 10, page: int = 1, search: str = '', user_id: str =
     ]
     raffles = raffleListEntity(Raffle.aggregate(pipeline))
     return {'status': 'success', 'results': len(raffles), 'raffles': raffles}
+
+@router.get('/{id}')
+def get_raffle(id: str, user_id: str = Depends(require_user)):
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Invalid id: {id}")
+        
+    pipeline = [
+        {'$match': {'_id': ObjectId(id)}},
+        {'$lookup': {'from': 'users', 'localField': 'user',
+                     'foreignField': '_id', 'as': 'user'}},
+        {'$unwind': '$user'},
+    ]
+    
+    db_cursor = Raffle.aggregate(pipeline)
+    results = list(db_cursor)
+        
+    if len(results) == 0:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"No raffle with this id: {id} found")
+        
+    raffle = raffleListEntity(results)[0]
+    
+    return raffle
