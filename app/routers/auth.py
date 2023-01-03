@@ -47,13 +47,14 @@ async def create_user(payload: schemas.CreateUserSchema, request: Request):
             "$set": {"verification_code": verification_code, "updated_at": datetime.utcnow()}})
 
         url = f"{request.url.scheme}://{request.client.host}:{request.url.port}/api/auth/verifyemail/{token.hex()}"
-        await Email(userEntity(new_user), url, [EmailStr(payload.email)]).sendVerificationCode()
+        #await Email(userEntity(new_user), url, [EmailStr(payload.email)]).sendVerificationCode()
     except Exception as error:
         User.find_one_and_update({"_id": result.inserted_id}, {
             "$set": {"verification_code": None, "updated_at": datetime.utcnow()}})
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail='There was an error sending email')
-    return {'status': 'success', 'message': 'Verification token successfully sent to your email'}
+    #return {'status': 'success', 'message': 'Verification token successfully sent to your email'}
+    return {'status': 'success', 'verify_link': url, 'message': 'Verification token successfully sent to your email'}
 
 
 @router.post('/login')

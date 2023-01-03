@@ -55,7 +55,7 @@ class FilteredUserResponse(UserBaseSchema):
 ########################################################################################
     
     
-class EventBaseSchema(BaseModel):
+class RaffleBaseSchema(BaseModel):
     owner_id: str
     description: str
     quantity: int
@@ -77,12 +77,12 @@ class EventBaseSchema(BaseModel):
         json_encoders = {ObjectId: str}
         
 
-class CreateEventSchema(EventBaseSchema):
+class CreateRaffleSchema(RaffleBaseSchema):
     description: ObjectId | None = None   
     pass
 
-class EventBoughtQuota(BaseModel):
-    event_id: int
+class RaffleBoughtQuota(BaseModel):
+    raffle_id: int
     bought_quantity: int
     bought_value: float
     is_resevertion: bool = False
@@ -94,7 +94,7 @@ class EventBoughtQuota(BaseModel):
         orm_mode = True
         
 
-class EventResponse(EventBaseSchema):
+class RaffleResponse(RaffleBaseSchema):
     owner_id: str
     description: str
     quantity: int

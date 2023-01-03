@@ -9,8 +9,8 @@ db = client[settings.MONGO_INITDB_DATABASE]
 
 User = db.users
 Post = db.posts
-Event = db.events
+Raffle = db.raffles
 
 User.create_index([("email", pymongo.ASCENDING)], unique=True)
 Post.create_index([("title", pymongo.ASCENDING)], unique=True)
-Event.create_index([("description", pymongo.ASCENDING)], unique=True)
+Raffle.create_index([("description", pymongo.ASCENDING)], unique=True)
