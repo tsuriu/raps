@@ -1,0 +1,20 @@
+_id: env_env_d7e25107744afc0451093794bf384015fd8f0e20_sub__f02d8f8a
+type: Environment
+parentId: env_d7e25107744afc0451093794bf384015fd8f0e20
+modified: 1672802577458
+created: 1672802195242
+name: Dev Environment
+data:
+  scheme: http
+  base_path: ""
+  host: localhost:8000
+  bearerToken: bearerToken
+dataPropertyOrder:
+  "&":
+    - scheme
+    - base_path
+    - host
+    - bearerToken
+color: "#cb6767"
+isPrivate: false
+metaSortKey: 1672802195242

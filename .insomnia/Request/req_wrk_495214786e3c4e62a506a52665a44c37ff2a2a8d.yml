@@ -1,0 +1,36 @@
+_id: req_wrk_495214786e3c4e62a506a52665a44c37ff2a2a8d
+type: Request
+parentId: fld_wrk_495214786e3c4e62a506a52665a44c37ac37b40b
+modified: 1672802195213
+created: 1672802195213
+url: "{{ base_url }}/api/raffles"
+name: Create Raffle
+description: ""
+method: POST
+body:
+  mimeType: application/json
+  text: |-
+    {
+      "title": "Cachacada FRUUU323",
+      "quantity": 60000,
+      "category": "Cachaca",
+      "max_buy_quantity": 10,
+      "quota_value": 15.35,
+      "expire_reserve": "1d",
+      "prize_draw_date": "01/04/2023",
+      "prize_draw_place": "Instagram",
+      "published": true
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+authentication: {}
+metaSortKey: -1672802195213
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

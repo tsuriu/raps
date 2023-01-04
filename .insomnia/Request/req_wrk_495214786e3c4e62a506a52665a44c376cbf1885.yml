@@ -1,0 +1,21 @@
+_id: req_wrk_495214786e3c4e62a506a52665a44c376cbf1885
+type: Request
+parentId: fld_wrk_495214786e3c4e62a506a52665a44c37ac37b40b
+modified: 1672802195203
+created: 1672802195203
+url: "{{ base_url }}/api/raffle/524161ee-0ac0-4500-b6e6-6c6e5b5f48e0"
+name: Delete Raffle
+description: ""
+method: DELETE
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1672802195203
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

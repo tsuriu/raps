@@ -1,0 +1,20 @@
+_id: env_env_d7e25107744afc0451093794bf384015fd8f0e20_sub__e43c7409
+type: Environment
+parentId: env_d7e25107744afc0451093794bf384015fd8f0e20
+modified: 1672802565767
+created: 1672802502787
+name: Homolog Environment
+data:
+  scheme: http
+  base_path: ""
+  host: 172.31.254.101:8000
+  bearerToken: bearerToken
+dataPropertyOrder:
+  "&":
+    - scheme
+    - base_path
+    - host
+    - bearerToken
+color: "#7d69cb"
+isPrivate: false
+metaSortKey: 1672802502787

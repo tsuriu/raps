@@ -1,0 +1,31 @@
+_id: req_wrk_495214786e3c4e62a506a52665a44c370e7af14b
+type: Request
+parentId: fld_wrk_495214786e3c4e62a506a52665a44c3757f2b181
+modified: 1672802195191
+created: 1672802195191
+url: "{{ base_url }}/api/users/updateme/63af96257e697b23cf752f07"
+name: Update Me
+description: ""
+method: PUT
+body:
+  mimeType: application/json
+  text: |-
+    {
+      "phone": "0099723456201"
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+authentication:
+  type: bearer
+  token: "{{bearerToken}}"
+  prefix: ""
+metaSortKey: -1672802195191
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global
