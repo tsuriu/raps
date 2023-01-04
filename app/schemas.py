@@ -76,6 +76,26 @@ class RaffleBaseSchema(BaseModel):
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
         
+        
+class RaffleUpdateSchema(BaseModel):
+    user: str | None = None
+    quantity: int | None = None
+    category: str | None = None
+    max_buy_quantity: int | None = None
+    quota_value: float | None = None
+    expire_reserve: str | None = None
+    prize_draw_date: str | None = None
+    prize_draw_place: str | None = None  
+    published: bool | None = None
+    updated_at: datetime | None = None
+    
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+    
+        
 
 class CreateRaffleSchema(RaffleBaseSchema):
     user: ObjectId | None = None   
