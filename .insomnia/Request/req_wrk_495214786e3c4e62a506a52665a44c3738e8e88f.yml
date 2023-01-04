@@ -1,0 +1,24 @@
+_id: req_wrk_495214786e3c4e62a506a52665a44c3738e8e88f
+type: Request
+parentId: fld_wrk_495214786e3c4e62a506a52665a44c3757f2b181
+modified: 1672802195188
+created: 1672802195188
+url: "{{ base_url }}/api/users/updateme/63af96257e697b23cf752f07"
+name: Delete User
+description: ""
+method: DELETE
+body: {}
+parameters: []
+headers: []
+authentication:
+  type: bearer
+  token: "{{bearerToken}}"
+  prefix: ""
+metaSortKey: -1672802195188
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

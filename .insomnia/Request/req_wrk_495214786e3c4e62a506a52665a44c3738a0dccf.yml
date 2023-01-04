@@ -1,0 +1,21 @@
+_id: req_wrk_495214786e3c4e62a506a52665a44c3738a0dccf
+type: Request
+parentId: fld_wrk_495214786e3c4e62a506a52665a44c37ac37b40b
+modified: 1672802195208
+created: 1672802195208
+url: "{{ base_url }}/api/raffles/63b4bc3ee0056497965bef54"
+name: Get Raffle
+description: ""
+method: GET
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1672802195208
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global
