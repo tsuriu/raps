@@ -51,6 +51,13 @@ class UserResponse(BaseModel):
 class FilteredUserResponse(UserBaseSchema):
     id: str
     
+########################################################################################
+class SessionBaseSchema(BaseModel):
+    user: str
+    access_token: str
+    refresh_token: str
+    started_at: datetime | None = None
+    ended_at: datetime | None = None
     
 ########################################################################################
     
