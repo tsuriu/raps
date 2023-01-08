@@ -38,7 +38,7 @@ def create_raffle(raffle: schemas.CreateRaffleSchema, user_id: str = Depends(req
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail=f"Raffle with title: '{raffle.title}' already exists")
         
-@router.get('/')
+@router.get("/")
 def get_raffles(limit: int = 10, page: int = 1, search: str = '', user_id: str = Depends(require_user)):
     skip = (page - 1) * limit
     pipeline = [
@@ -55,7 +55,7 @@ def get_raffles(limit: int = 10, page: int = 1, search: str = '', user_id: str =
     raffles = raffleListEntity(Raffle.aggregate(pipeline))
     return {'status': 'success', 'results': len(raffles), 'raffles': raffles}
 
-@router.get('/{id}')
+@router.get("/{id}")
 def get_raffle(id: str, user_id: str = Depends(require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -79,7 +79,7 @@ def get_raffle(id: str, user_id: str = Depends(require_user)):
     
     return raffle
 
-@router.put('/update/{id}')
+@router.put("/{id}")
 def update_raffle(id: str, payload: schemas.RaffleUpdateSchema, user_id: str = Depends(require_user)):
     
     if not ObjectId.is_valid(id):
@@ -96,7 +96,7 @@ def update_raffle(id: str, payload: schemas.RaffleUpdateSchema, user_id: str = D
         
     return raffleEntity(updated_raffle)
 
-@router.delete('/{id}')
+@router.delete("/{id}")
 def delete_raffle(id: str, user_id: str = Depends(require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
