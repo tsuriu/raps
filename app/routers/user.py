@@ -13,14 +13,22 @@ from app.oauth2 import require_user
 router = APIRouter()
 
 
-@router.get('/me', response_model=schemas.UserResponse)
-def get_me(user_id: str = Depends(oauth2.require_user)):
-    user = userResponseEntity(User.find_one({'_id': ObjectId(str(user_id))}))
+@router.get("/{id}", response_model=schemas.UserResponse)
+def get_user(id: str, user_id: str = Depends(oauth2.require_user)):
+    if not ObjectId.is_valid(user_id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Invalid id: {user_id}")
+        
+    user = userResponseEntity(User.find_one({'_id': ObjectId(str(id))}))
     return {"status": "success", "user": user}
 
 
-@router.get('/all')
-def get_users(limit: int = 10, page: int = 1, search: str = '', user_id: str = Depends(require_user)):
+@router.get("/")
+def get_users(limit: int = 10, page: int = 1, user_id: str = Depends(require_user)):
+    if not ObjectId.is_valid(user_id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Invalid id: {user_id}")
+        
     skip = (page - 1) * limit
     pipeline = [
         {'$match': {}},
@@ -32,13 +40,10 @@ def get_users(limit: int = 10, page: int = 1, search: str = '', user_id: str = D
     ]
     
     users = userListEntity(User.aggregate(pipeline))
-    for user in users:
-        del user["password"]
-    
     return {'status': 'success', 'results': len(users), 'users':users}
 
 
-@router.put('/updateme/{id}')
+@router.put("/{id}")
 def update_me(id: str, payload: schemas.UserUpdateSchema, user_id: str = Depends(require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -51,7 +56,7 @@ def update_me(id: str, payload: schemas.UserUpdateSchema, user_id: str = Depends
         
     return userEntity(updated_user)
 
-@router.delete('/{id}')
+@router.delete("/{id}")
 def delete_user(id: str, user_id: str = Depends(require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
