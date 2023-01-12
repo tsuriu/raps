@@ -34,4 +34,4 @@ def embeddedUserResponse(user) -> dict:
 
 
 def userListEntity(users) -> list:
-    return [userEntity(user) for user in users]
+    return [userResponseEntity(user) for user in users]
