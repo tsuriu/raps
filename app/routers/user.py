@@ -19,12 +19,16 @@ def get_user(id: str, user_id: str = Depends(oauth2.require_user)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"Invalid id: {user_id}")
         
+<<<<<<< app/routers/user.py
     if id == "me":
         user = userResponseEntity(User.find_one({'_id': ObjectId(str(user_id))}))
     else:
         user = userResponseEntity(User.find_one({'_id': ObjectId(str(id))}))        
         
     
+=======
+    user = userResponseEntity(User.find_one({'_id': ObjectId(str(id))}))
+>>>>>>> app/routers/user.py
     return {"status": "success", "user": user}
 
 
