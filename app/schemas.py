@@ -53,11 +53,22 @@ class FilteredUserResponse(UserBaseSchema):
     
 ########################################################################################
 class SessionBaseSchema(BaseModel):
+    id: str
     user: str
-    access_token: str
-    refresh_token: str
-    started_at: datetime | None = None
-    ended_at: datetime | None = None
+    created_at: datetime | None = None
+    refreshed_at: datetime | None = None
+
+    class Config:
+        orm_mode = True
+
+class SessionResponse(BaseModel):
+    id: str
+    user: FilteredUserResponse
+    created_at: datetime | None = None
+    refreshed_at: datetime | None = None
+
+    class Config:
+        orm_mode = True    
     
 ########################################################################################
     
@@ -122,7 +133,8 @@ class RaffleBoughtQuota(BaseModel):
         
 
 class RaffleResponse(RaffleBaseSchema):
-    user: str
+    id: str
+    user: FilteredUserResponse
     title: str
     quantity: int
     category: str
