@@ -24,7 +24,6 @@ def get_user(id: str, user_id: str = Depends(oauth2.require_user)):
     else:
         user = userResponseEntity(User.find_one({'_id': ObjectId(str(id))}))        
         
-
     return {"status": "success", "user": user}
 
 

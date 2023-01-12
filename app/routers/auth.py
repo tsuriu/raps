@@ -8,7 +8,7 @@ from pydantic import EmailStr
 from app import oauth2
 from app.database import User
 from app.email import Email
-from app.serializers.userSerializers import userEntity
+from app.serializers.userSerializers import userEntity, userResponseEntity
 from .. import schemas, utils
 from app.oauth2 import AuthJWT
 from ..config import settings
@@ -93,7 +93,7 @@ def login(payload: schemas.LoginUserSchema, response: Response, Authorize: AuthJ
                         ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, False, 'lax')
 
     # Send both access
-    return {'status': 'success', 'access_token': access_token, 'refresh_token': refresh_token}
+    return {'status': 'success', 'access_token': access_token, 'user': userResponseEntity(db_user)}
 
 
 @router.get('/refresh')
