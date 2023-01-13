@@ -10,7 +10,7 @@ from app.database import User
 from app.email import Email
 from app.serializers.userSerializers import userEntity, userResponseEntity
 from .. import schemas, utils
-from app.oauth2 import AuthJWT
+from app.oauth2 import AuthJWT, denylist
 from ..config import settings
 
 
@@ -109,6 +109,11 @@ def refresh_token(response: Response, Authorize: AuthJWT = Depends()):
         if not user:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail='The user belonging to this token no logger exist')
+            
+        
+        jti = Authorize.get_raw_jwt()
+        denylist.add(jti['jti'])
+        
         access_token = Authorize.create_access_token(
             subject=str(user["id"]), expires_time=timedelta(minutes=ACCESS_TOKEN_EXPIRES_IN))
     except Exception as e:
@@ -128,6 +133,9 @@ def refresh_token(response: Response, Authorize: AuthJWT = Depends()):
 
 @router.get('/logout', status_code=status.HTTP_200_OK)
 def logout(response: Response, Authorize: AuthJWT = Depends(), user_id: str = Depends(oauth2.require_user)):
+    jti = Authorize.get_raw_jwt()
+    denylist.add(jti['jti'])
+    
     Authorize.unset_jwt_cookies()
     response.set_cookie('logged_in', '', -1)
 
