@@ -14,6 +14,8 @@ from .config import settings
 class Settings(BaseModel):
     authjwt_algorithm: str = settings.JWT_ALGORITHM
     authjwt_decode_algorithms: List[str] = [settings.JWT_ALGORITHM]
+    authjwt_denylist_enabled: bool = True
+    authjwt_denylist_token_checks: set = {"access","refresh"}
     authjwt_token_location: set = {'cookies', 'headers'}
     authjwt_access_cookie_key: str = 'access_token'
     authjwt_refresh_cookie_key: str = 'refresh_token'
@@ -23,6 +25,14 @@ class Settings(BaseModel):
     authjwt_private_key: str = base64.b64decode(
         settings.JWT_PRIVATE_KEY).decode('utf-8')
 
+
+denylist = set()
+
+
+@AuthJWT.token_in_denylist_loader
+def check_if_token_in_denylist(decrypted_token):
+    jti = decrypted_token['jti']
+    return jti in denylist
 
 @AuthJWT.load_config
 def get_config():
