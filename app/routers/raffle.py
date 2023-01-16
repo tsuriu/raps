@@ -39,7 +39,7 @@ def create_raffle(raffle: schemas.CreateRaffleSchema, user_id: str = Depends(req
                             detail=f"Raffle with title: '{raffle.title}' already exists")
         
 @router.get("/")
-def get_raffles(limit: int = 10, page: int = 1, search: str = '', user_id: str = Depends(require_user)):
+def get_raffles(limit: int = 10, page: int = 1, only_my: bool = False, search: str = '', user_id: str = Depends(require_user)):
     skip = (page - 1) * limit
     pipeline = [
         {'$match': {}},
@@ -52,7 +52,12 @@ def get_raffles(limit: int = 10, page: int = 1, search: str = '', user_id: str =
             '$limit': limit
         }
     ]
+    
     raffles = raffleListEntity(Raffle.aggregate(pipeline))
+    
+    if only_my:
+        raffles = [raffle for raffle in raffles if raffle["user"]["id"] == user_id]
+        
     return {'status': 'success', 'results': len(raffles), 'raffles': raffles}
 
 @router.get("/{id}")
