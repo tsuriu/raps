@@ -30,9 +30,9 @@ def create_raffle(raffle: schemas.CreateRaffleSchema, user_id: str = Depends(req
                          'foreignField': '_id', 'as': 'user'}},
             {'$unwind': '$user'},
         ]
-        raffle_id = raffleListEntity(Raffle.aggregate(pipeline))[0]
+        raffle = raffleListEntity(Raffle.aggregate(pipeline))[0]
         
-        return {'status': 'success', 'raffle_id': raffle_id}
+        return {'status': 'success', 'raffle': raffle}
         
     except DuplicateKeyError:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
