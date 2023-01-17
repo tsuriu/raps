@@ -58,7 +58,7 @@ def update_me(id: str, payload: schemas.UserUpdateSchema, user_id: str = Depends
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'No user with this id: {id} found')
         
-    return userEntity(updated_user)
+    return userResponseEntity(updated_user)
 
 @router.delete("/{id}")
 def delete_user(id: str, user_id: str = Depends(require_user)):
