@@ -76,6 +76,7 @@ class SessionResponse(BaseModel):
 class RaffleBaseSchema(BaseModel):
     user: str
     title: str
+    description: str
     quantity: int
     category: str
     max_buy_quantity: int
@@ -97,6 +98,7 @@ class RaffleBaseSchema(BaseModel):
         
 class RaffleUpdateSchema(BaseModel):
     user: str | None = None
+    description: str | None = None
     quantity: int | None = None
     category: str | None = None
     max_buy_quantity: int | None = None
@@ -117,7 +119,6 @@ class RaffleUpdateSchema(BaseModel):
 
 class CreateRaffleSchema(RaffleBaseSchema):
     user: ObjectId | None = None   
-    pass
 
 class RaffleBoughtQuota(BaseModel):
     raffle_id: int
@@ -136,6 +137,7 @@ class RaffleResponse(RaffleBaseSchema):
     id: str
     user: FilteredUserResponse
     title: str
+    description: str
     quantity: int
     category: str
     max_buy_quantity: int
