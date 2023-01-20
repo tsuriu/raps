@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import auth, user, raffle
+from app.routers import auth, user, raffle, purchase
 
 app = FastAPI()
 
@@ -22,7 +22,7 @@ app.add_middleware(
 
 app.include_router(auth.router, tags=['Auth'], prefix='/api/auth')
 app.include_router(user.router, tags=['Users'], prefix='/api/users')
-#app.include_router(post.router, tags=['Posts'], prefix='/api/posts')
+app.include_router(purchase.router, tags=['Posts'], prefix='/api/purchases')
 app.include_router(raffle.router, tags=['Raffles'], prefix='/api/raffles')
 
 

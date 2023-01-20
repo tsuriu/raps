@@ -8,10 +8,11 @@ print('Connected to MongoDB...')
 db = client[settings.MONGO_INITDB_DATABASE]
 
 User = db.users
-#Post = db.posts
 Raffle = db.raffles
+Purchase = db.purchase
 Session = db.sessions
 
 User.create_index([("email", pymongo.ASCENDING)], unique=True)
-#Post.create_index([("title", pymongo.ASCENDING)], unique=True)
 Raffle.create_index([("title", pymongo.ASCENDING)], unique=True)
+Purchase.create_index([("bet", pymongo.ASCENDING)], unique=True)
+Session.create_index([("key", pymongo.ASCENDING)], unique=True)

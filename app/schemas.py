@@ -82,6 +82,7 @@ class RaffleBaseSchema(BaseModel):
     max_buy_quantity: int
     quota_value: float
     expire_reserve: str
+    #selected_bets: str
     prize_draw_date: str
     prize_draw_place: str
     published: bool = False
@@ -104,6 +105,7 @@ class RaffleUpdateSchema(BaseModel):
     max_buy_quantity: int | None = None
     quota_value: float | None = None
     expire_reserve: str | None = None
+    #selected_bets: str | None = None
     prize_draw_date: str | None = None
     prize_draw_place: str | None = None  
     published: bool | None = None
@@ -120,17 +122,6 @@ class RaffleUpdateSchema(BaseModel):
 class CreateRaffleSchema(RaffleBaseSchema):
     user: ObjectId | None = None   
 
-class RaffleBoughtQuota(BaseModel):
-    raffle_id: int
-    bought_quantity: int
-    bought_value: float
-    is_resevertion: bool = False
-    buyer_name: str
-    buyer_phne: str
-    purchased_at: datetime | None = None
-        
-    class Config:
-        orm_mode = True
         
 
 class RaffleResponse(RaffleBaseSchema):
@@ -143,6 +134,7 @@ class RaffleResponse(RaffleBaseSchema):
     max_buy_quantity: int
     quota_value: float
     expire_reserve: str
+    #selected_bets: str
     prize_draw_date: str
     prize_draw_place: str
     published: bool = False
@@ -150,6 +142,42 @@ class RaffleResponse(RaffleBaseSchema):
     created_at: datetime | None = None
     updated_at: datetime | None = None
 
+
+########################################################################################
+
+class PurchaseBaseSchema(BaseModel):
+    raffle: str
+    user: str
+    quantity: int
+    status: str
+    purchased_at: datetime | None = None
+    bet: str
+    
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        
+        
+class PurchaseUpdateSchema(BaseModel):
+    raffle: str | None = None
+    user: str | None = None
+    quantity: int | None = None
+    status: str | None = None
+    purchased_at: datetime | None = None
+    bet: str | None = None
+    
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+
+
+class CreatePurchaseSchema(PurchaseBaseSchema):
+    user: ObjectId | None = None  
+    raffle: ObjectId | None = None
 
 ########################################################################################
 
