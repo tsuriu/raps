@@ -20,16 +20,14 @@ router = APIRouter()
 def create_purchase(purchase: schemas.CreatePurchaseSchema, raffle_id: str, user_id: str = Depends(require_user)):
     purchase.user = ObjectId(user_id)
     purchase.raffle = ObjectId(raffle_id)
-    purchase.purchased_at = datetime.utcnow()
-    purchase.status = ""
-    
+    purchase.purchased_at = datetime.utcnow()    
     
     try:
         result = Purchase.insert_one(purchase.dict())
         pipeline = [
             {'$match': {'_id': result.inserted_id}},
-            {'$lookup': {'from': 'users', 'localField': 'user',
-                         'foreignField': '_id', 'as': 'user'}},
+            {'$lookup': {'from': 'users', 'localField': 'user', 'foreignField': '_id', 'as': 'user'}},
+            {'$lookup': {'from': 'raffles', 'localField': 'raffle', 'foreignField': '_id', 'as': 'raffle'}},
             {'$unwind': '$user'},
         ]
         purchase = purchaseListEntity(Purchase.aggregate(pipeline))[0]
@@ -47,7 +45,7 @@ def get_purchases(limit: int = 10, page: int = 1, only_my: bool = False, search:
         {'$match': {}},
         {'$lookup': {'from': 'users', 'localField': 'user', 'foreignField': '_id', 'as': 'user'}},
         {'$lookup': {'from': 'raffles', 'localField': 'raffle', 'foreignField': '_id', 'as': 'raffle'}},
-        #{'$unwind': '$user'},
+        {'$unwind': '$user'},
         {
             '$skip': skip
         }, {
@@ -70,8 +68,7 @@ def get_purchase(id: str, user_id: str = Depends(require_user)):
         
     pipeline = [
         {'$match': {'_id': ObjectId(id)}},
-        {'$lookup': {'from': 'users', 'localField': 'user',
-                     'foreignField': '_id', 'as': 'user'}},
+        {'$lookup': {'from': 'users', 'localField': 'user','foreignField': '_id', 'as': 'user'}},
         {'$unwind': '$user'},
     ]
     
@@ -86,7 +83,7 @@ def get_purchase(id: str, user_id: str = Depends(require_user)):
     
     return purchase
 
-@router.put("/{id}")
+#@router.put("/{id}")
 def update_purchase(id: str, payload: schemas.PurchaseUpdateSchema, user_id: str = Depends(require_user)):
     
     if not ObjectId.is_valid(id):
@@ -103,7 +100,7 @@ def update_purchase(id: str, payload: schemas.PurchaseUpdateSchema, user_id: str
         
     return purchaseEntity(updated_purchase)
 
-@router.delete("/{id}")
+#@router.delete("/{id}")
 def delete_purchase(id: str, user_id: str = Depends(require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
