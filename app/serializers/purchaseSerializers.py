@@ -9,6 +9,7 @@ def purchaseEntity(purchase) -> dict:
         "raffle": str(purchase["raffle"]),
         "quantity": purchase["quantity"],
         "status": purchase["status"],
+        "betting_method": purchase["betting_method"],
         "purchased_at": purchase["purchased_at"],
         "bet": purchase["bet"]
     }
@@ -20,6 +21,7 @@ def populatePurchaseEntity(purchase) -> dict:
         "raffle": embeddedRaffleResponse(purchase["raffle"]),
         "quantity": purchase["quantity"],
         "status": purchase["status"],
+        "betting_method": purchase["betting_method"],
         "purchased_at": purchase["purchased_at"],
         "bet": purchase["bet"]
     }
@@ -31,6 +33,7 @@ def embeddedPurchaseResponse(purchase) -> dict:
         "raffle": embeddedRaffleResponse(purchase["raffle"]),
         "quantity": purchase["quantity"],
         "status": purchase["status"],
+        "betting_method": purchase["betting_method"],
         "purchased_at": purchase["purchased_at"],
         "bet": purchase["bet"]
     }
