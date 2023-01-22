@@ -10,6 +10,9 @@ from app.database import Raffle
 def auto_bet(sorted_numbers: list, max_quotas: int, samples: int):
     quotas = list(range(max_quotas))
     
+    if sorted_numbers == "":
+        sorted_numbers = []
+    
     if len(sorted_numbers) > 0:
         for num in [int(x) for x in sorted_numbers]:
             quotas.remove(num)

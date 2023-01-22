@@ -153,7 +153,7 @@ class PurchaseBaseSchema(BaseModel):
     user: str
     quantity: int
     status: str
-    betting_method: str
+    betting_method: str 
     purchased_at: datetime  | None = None
     bet: str | None = None
     
