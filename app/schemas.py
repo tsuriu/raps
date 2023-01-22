@@ -51,7 +51,7 @@ class UserResponse(BaseModel):
 class FilteredUserResponse(UserBaseSchema):
     id: str
     
-########################################################################################
+
 class SessionBaseSchema(BaseModel):
     id: str
     user: str
@@ -70,7 +70,7 @@ class SessionResponse(BaseModel):
     class Config:
         orm_mode = True    
     
-########################################################################################
+
     
     
 class RaffleBaseSchema(BaseModel):
@@ -82,7 +82,8 @@ class RaffleBaseSchema(BaseModel):
     max_buy_quantity: int
     quota_value: float
     expire_reserve: str
-    #selected_bets: str
+    betting_method: str
+    selected_bets: str
     prize_draw_date: str
     prize_draw_place: str
     published: bool = False
@@ -105,7 +106,8 @@ class RaffleUpdateSchema(BaseModel):
     max_buy_quantity: int | None = None
     quota_value: float | None = None
     expire_reserve: str | None = None
-    #selected_bets: str | None = None
+    betting_method: str | None = None
+    selected_bets: str | None = None
     prize_draw_date: str | None = None
     prize_draw_place: str | None = None  
     published: bool | None = None
@@ -134,7 +136,8 @@ class RaffleResponse(RaffleBaseSchema):
     max_buy_quantity: int
     quota_value: float
     expire_reserve: str
-    #selected_bets: str
+    betting_method: str
+    selected_bets: str
     prize_draw_date: str
     prize_draw_place: str
     published: bool = False
@@ -143,15 +146,16 @@ class RaffleResponse(RaffleBaseSchema):
     updated_at: datetime | None = None
 
 
-########################################################################################
+
 
 class PurchaseBaseSchema(BaseModel):
     raffle: str
     user: str
     quantity: int
     status: str
-    purchased_at: datetime | None = None
-    bet: str
+    betting_method: str
+    purchased_at: datetime  | None = None
+    bet: str | None = None
     
     class Config:
         orm_mode = True
@@ -165,6 +169,7 @@ class PurchaseUpdateSchema(BaseModel):
     user: str | None = None
     quantity: int | None = None
     status: str | None = None
+    betting_method: str | None = None
     purchased_at: datetime | None = None
     bet: str | None = None
     
@@ -179,7 +184,7 @@ class CreatePurchaseSchema(PurchaseBaseSchema):
     user: ObjectId | None = None  
     raffle: ObjectId | None = None
 
-########################################################################################
+
 
 
 class PostBaseSchema(BaseModel):
