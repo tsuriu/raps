@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from pymongo.collection import ReturnDocument
 from app import schemas
@@ -6,21 +7,36 @@ from app.database import Raffle
 
 from bson.objectid import ObjectId
 from pymongo.errors import DuplicateKeyError
-from app.serializers.raffleSerializers import raffleResponseEntity, raffleEntity, raffleListEntity
+from app.serializers.raffleSerializers import prizeEntity, raffleResponseEntity, raffleEntity, raffleListEntity
 
 from app.database import User
 from .. import schemas, oauth2
 
-from app.oauth2 import require_user
+from app.oauth2 import require_user, RoleChecker
+
+allow_raffle_creation = RoleChecker(["admin","user"])
 
 
 router = APIRouter()
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/", 
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(allow_raffle_creation)]
+)
 def create_raffle(raffle: schemas.CreateRaffleSchema, user_id: str = Depends(require_user)):
     raffle.user = ObjectId(user_id)
     raffle.created_at = datetime.utcnow()
     raffle.updated_at = raffle.created_at
+    
+    check_slug = False #get_raffles(search=str({"slug": raffle.slug}), only_my=False)
+    
+    if not raffle.slug:
+        raffle.slug = ((raffle.title).lower()).replace(" ", "-")
+    
+    if raffle.slug and check_slug:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                            detail=f"Raffle with title: '{raffle.slug}' already exists")
     
     try:
         result = Raffle.insert_one(raffle.dict())
@@ -38,8 +54,9 @@ def create_raffle(raffle: schemas.CreateRaffleSchema, user_id: str = Depends(req
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail=f"Raffle with title: '{raffle.title}' already exists")
         
+        
 @router.get("/")
-def get_raffles(limit: int = 10, page: int = 1, only_my: bool = False, search: str = '', user_id: str = Depends(require_user)):
+def get_raffles(limit: int = 10, page: int = 1, only_my: bool = True, search: str = "", user_id: str = Depends(require_user)):
     skip = (page - 1) * limit
     pipeline = [
         {'$match': {}},
@@ -52,13 +69,19 @@ def get_raffles(limit: int = 10, page: int = 1, only_my: bool = False, search: s
             '$limit': limit
         }
     ]
-    
+  
     raffles = raffleListEntity(Raffle.aggregate(pipeline))
     
-    if only_my:
-        raffles = [raffle for raffle in raffles if raffle["user"]["id"] == user_id]
+    if search:
+        s = json.loads(search)
+        raffles = [raffle for raffle in raffles if raffle[list(s.keys())[0]] == s[list(s.keys())[0]]]
+        return raffles
+    else:    
+        if only_my:
+            raffles = [raffle for raffle in raffles if raffle["user"]["id"] == user_id]
         
-    return {'status': 'success', 'results': len(raffles), 'raffles': raffles}
+        return {'status': 'success', 'results': len(raffles), 'raffles': raffles}
+
 
 @router.get("/{id}")
 def get_raffle(id: str, user_id: str = Depends(require_user)):
@@ -84,6 +107,7 @@ def get_raffle(id: str, user_id: str = Depends(require_user)):
     
     return raffle
 
+
 @router.put("/{id}")
 def update_raffle(id: str, payload: schemas.RaffleUpdateSchema, user_id: str = Depends(require_user)):
     
@@ -101,7 +125,11 @@ def update_raffle(id: str, payload: schemas.RaffleUpdateSchema, user_id: str = D
         
     return raffleEntity(updated_raffle)
 
-@router.delete("/{id}")
+
+@router.delete(
+    "/{id}",
+    dependencies=[Depends(allow_raffle_creation)]
+)
 def delete_raffle(id: str, user_id: str = Depends(require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,

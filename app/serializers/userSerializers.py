@@ -24,6 +24,13 @@ def userResponseEntity(user) -> dict:
     }
 
 
+def embeddedUserResponse_NoAuth(user) -> dict:
+    return {
+        "name": user["name"],
+        "email": user["email"],
+        "phone": user["phone"]
+    }
+
 def embeddedUserResponse(user) -> dict:
     return {
         "id": str(user["_id"]),
@@ -31,7 +38,6 @@ def embeddedUserResponse(user) -> dict:
         "email": user["email"],
         "phone": user["phone"]
     }
-
 
 def userListEntity(users) -> list:
     return [userResponseEntity(user) for user in users]

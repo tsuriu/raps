@@ -68,14 +68,26 @@ class SessionResponse(BaseModel):
     refreshed_at: datetime | None = None
 
     class Config:
-        orm_mode = True    
+        orm_mode = True
+        
+        
+class RafflePrizeBaseSchema(BaseModel):
+    ord_number = str
+    prize_description = str
     
 
+class RafflePromotionBaseSchame(BaseModel):
+    raffle_qtd = str
+    raffle_discount = str
     
-    
+
 class RaffleBaseSchema(BaseModel):
     user: str
     title: str
+    slug: str
+    phone: str
+    prize: list #List[RafflePrizeBaseSchema]
+    promotion: list #List[RafflePromotionBaseSchame]
     description: str
     quantity: int
     category: str
@@ -101,6 +113,9 @@ class RaffleBaseSchema(BaseModel):
 class RaffleUpdateSchema(BaseModel):
     user: str | None = None
     description: str | None = None
+    phone: str | None = None
+    prize: list | None = None #List[RafflePrizeBaseSchema] | None = None
+    promotion: list | None = None #List[RafflePromotionBaseSchame]| None = None
     quantity: int | None = None
     category: str | None = None
     max_buy_quantity: int | None = None
@@ -130,6 +145,10 @@ class RaffleResponse(RaffleBaseSchema):
     id: str
     user: FilteredUserResponse
     title: str
+    slug: str
+    phone: str
+    prize: str #List[RafflePrizeBaseSchema]
+    promotion: str #List[RafflePromotionBaseSchame]
     description: str
     quantity: int
     category: str
@@ -144,7 +163,6 @@ class RaffleResponse(RaffleBaseSchema):
     published_at: datetime | None = None
     created_at: datetime | None = None
     updated_at: datetime | None = None
-
 
 
 
