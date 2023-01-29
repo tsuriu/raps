@@ -8,6 +8,7 @@ from app.database import Raffle
 from bson.objectid import ObjectId
 from pymongo.errors import DuplicateKeyError
 from app.serializers.raffleSerializers import prizeEntity, raffleResponseEntity, raffleEntity, raffleListEntity
+from app.serializers.userSerializers import userEntity
 
 from app.database import User
 from .. import schemas, oauth2
@@ -118,9 +119,11 @@ def update_raffle(id: str, payload: schemas.RaffleUpdateSchema, user_id: str = D
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"Invalid id: {id}")
         
+    
+    user = userEntity(User.find_one({'_id': ObjectId(str(user_id))}))
     raffle = raffleEntity(Raffle.find_one({"_id": ObjectId(id)}))
     
-    if user_id != raffle["user"]:
+    if (user_id != raffle["user"] and user["role"] == "user") or user["role"] != "admin":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Operation not permitted")
         
