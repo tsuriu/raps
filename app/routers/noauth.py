@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from pymongo.collection import ReturnDocument
 from app import schemas
@@ -26,7 +27,10 @@ def get_raffles(limit: int = 10, page: int = 1, search: str = ''):
     ]
     
     raffles = raffleListEntity_NoAuth(Raffle.aggregate(pipeline))
-
     
-        
-    return {'status': 'success', 'results': len(raffles), 'raffles': raffles}
+    if search:
+        s = json.loads(search)
+        raffles = [raffle for raffle in raffles if raffle[list(s.keys())[0]] == s[list(s.keys())[0]]]
+        return raffles
+    else:
+        return {'status': 'success', 'results': len(raffles), 'raffles': raffles}

@@ -16,7 +16,7 @@ def promotionEntity(promotion) -> dict:
 def raffleEntity(raffle) -> dict:
     return {
         "id": str(raffle["_id"]),
-        "user": str(raffle["user"]),
+        "user": embeddedUserResponse(raffle["user"]),
         "title": raffle["title"],
         "slug": raffle["slug"],
         "phone": raffle["phone"],
