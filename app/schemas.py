@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import List
-from pydantic import BaseModel, EmailStr, constr
+from typing import List, Optional
+from pydantic import BaseModel, EmailStr, constr, Field
 from bson.objectid import ObjectId
 
 
@@ -29,12 +29,15 @@ class UserUpdateSchema(BaseModel):
 
 
 class CreateUserSchema(UserBaseSchema):
+    email: Optional[EmailStr] = Field(None)
+    phone: Optional[str] = Field(None)
     password: constr(min_length=8)
     verified: bool = False
 
 
 class LoginUserSchema(BaseModel):
-    email: EmailStr
+    email: Optional[EmailStr] = Field(None)
+    phone: Optional[str] = Field(None)
     password: constr(min_length=8)
 
 

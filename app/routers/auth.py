@@ -21,18 +21,35 @@ REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 
 @router.post('/register', status_code=status.HTTP_201_CREATED)
 async def create_user(payload: schemas.CreateUserSchema, request: Request):
+    payload_run = dict(payload)
+    
+    check_dup = {}
+    
+    if payload.email:
+        check_dup = {'email': payload.email.lower()}
+        payload.role = 'user'
+        payload.email = payload.email.lower()
+        #  Hash the password
+        payload.password = utils.hash_password(payload.password)
+
+    
+    if payload.phone and not payload.email:
+        check_dup = {'phone': payload.phone}
+        
+        payload.role = 'cli'
+        payload.verified = True
+        payload.email = "{}@cli.rifatu".format(payload.phone)
+        #  Hash the password
+        payload.password = utils.hash_password(payload.phone)
+
+    
     # Check if user already exist
-    user = User.find_one({'email': payload.email.lower()})
+    user = User.find_one(check_dup)
     if user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail='Account already exist')
-    #  Hash the password
-    payload.password = utils.hash_password(payload.password)
     
-    payload.role = 'user'
     #HML
-    payload.verified = True
-    payload.email = payload.email.lower()
     payload.created_at = datetime.utcnow()
     payload.updated_at = payload.created_at
 
