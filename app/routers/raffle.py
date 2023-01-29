@@ -108,13 +108,29 @@ def get_raffle(id: str, user_id: str = Depends(require_user)):
     return raffle
 
 
-@router.put("/{id}")
+@router.put(
+    "/{id}",
+    dependencies=[Depends(allow_raffle_creation)]
+)
 def update_raffle(id: str, payload: schemas.RaffleUpdateSchema, user_id: str = Depends(require_user)):
     
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"Invalid id: {id}")
         
+    raffle = raffleEntity(Raffle.find_one({"_id": ObjectId(id)}))
+    
+    if user_id != raffle["user"]:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Operation not permitted")
+        
+    payload.updated_at = datetime.utcnow()        
+    payload_run = dict(payload)
+    
+    if "published" in payload_run.keys() and raffle["published"] == False and payload_run["published"] == True:
+        payload.published_at = datetime.utcnow()
+        
+            
     updated_raffle = Raffle.find_one_and_update(
         {'_id': ObjectId(id)}, {'$set': payload.dict(exclude_none=True)}, return_document=ReturnDocument.AFTER
     )
@@ -124,6 +140,7 @@ def update_raffle(id: str, payload: schemas.RaffleUpdateSchema, user_id: str = D
                             detail=f'No raffle with this id: {id} found')
         
     return raffleEntity(updated_raffle)
+
 
 
 @router.delete(
