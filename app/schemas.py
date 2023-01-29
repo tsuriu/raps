@@ -86,6 +86,7 @@ class RafflePromotionBaseSchame(BaseModel):
 
 class RaffleBaseSchema(BaseModel):
     user: str
+    image: str
     title: str
     slug: str
     phone: str
@@ -115,6 +116,7 @@ class RaffleBaseSchema(BaseModel):
         
 class RaffleUpdateSchema(BaseModel):
     user: str | None = None
+    image: str | None = None
     description: str | None = None
     phone: str | None = None
     prize: list | None = None #List[RafflePrizeBaseSchema] | None = None
@@ -148,6 +150,7 @@ class CreateRaffleSchema(RaffleBaseSchema):
 class RaffleResponse(RaffleBaseSchema):
     id: str
     user: FilteredUserResponse
+    image: str
     title: str
     slug: str
     phone: str

@@ -17,6 +17,7 @@ def raffleEntity(raffle) -> dict:
     return {
         "id": str(raffle["_id"]),
         "user": str(raffle["user"]),
+        "image": str(raffle["image"]),
         "title": raffle["title"],
         "slug": raffle["slug"],
         "phone": raffle["phone"],
@@ -42,6 +43,7 @@ def populateRaffleEntity(raffle) -> dict:
     return {
         "id": str(raffle["_id"]),
         "user": embeddedUserResponse(raffle["user"]),
+        "image": str(raffle["image"]),
         "title": raffle["title"],
         "slug": raffle["slug"],
         "phone": raffle["phone"],
@@ -67,6 +69,7 @@ def embeddedRaffleResponse(raffle) -> dict:
     return {
         "id": str(raffle["_id"]),
         "user": embeddedUserResponse(raffle["user"]),
+        "image": str(raffle["image"]),
         "title": raffle["title"],
         "slug": raffle["slug"],
         "phone": raffle["phone"],
@@ -89,6 +92,7 @@ def embeddedRaffleResponse(raffle) -> dict:
 def raffleResponseEntity(raffle) -> dict:
     return {
         "user": embeddedUserResponse_NoAuth(raffle["user"]),
+        "image": str(raffle["image"]),
         "title": raffle["title"],
         "slug": raffle["slug"],
         "phone": raffle["phone"],
