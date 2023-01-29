@@ -126,6 +126,7 @@ class RaffleUpdateSchema(BaseModel):
     prize_draw_date: str | None = None
     prize_draw_place: str | None = None  
     published: bool | None = None
+    published_at: datetime | None = None
     updated_at: datetime | None = None
     
     class Config:
