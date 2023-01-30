@@ -4,8 +4,15 @@ from pydantic import BaseSettings, EmailStr
 class Settings(BaseSettings):
     DEVENV: bool = False
     
-    DATABASE_URL: str
+    DATABASE_SCHEMA: str
+    DATABASE_USER: str 
+    DATABASE_PASSWORD: str
+    DATABASE_HOST: str
+    DATABASE_PORT: int
+    
     MONGO_INITDB_DATABASE: str
+    
+    DATABASE_URL: str
 
     JWT_PUBLIC_KEY: str
     JWT_PRIVATE_KEY: str
