@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str
 
     CLIENT_ORIGIN: str
+    VERIFICATION_URL: str
 
     EMAIL_HOST: str
     EMAIL_PORT: int
