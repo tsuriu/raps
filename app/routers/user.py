@@ -17,7 +17,11 @@ allow_raffle_creation = RoleChecker(["admin","user"])
 router = APIRouter()
 
 
-@router.get("/{id}", response_model=schemas.UserResponse)
+@router.get(
+    "/{id}", 
+    dependencies=[Depends(allow_raffle_creation)], 
+    response_model=schemas.UserResponse
+)
 def get_user(id: str, user_id: str = Depends(oauth2.require_user)):
     if not ObjectId.is_valid(user_id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -26,7 +30,12 @@ def get_user(id: str, user_id: str = Depends(oauth2.require_user)):
     if id == "me":
         user = userResponseEntity(User.find_one({'_id': ObjectId(str(user_id))}))
     else:
-        user = userResponseEntity(User.find_one({'_id': ObjectId(str(id))}))        
+        user_check = userEntity(User.find_one({'_id': ObjectId(str(user_id))}))
+        if user_check["role"] == "admin":
+            user = userResponseEntity(User.find_one({'_id': ObjectId(str(id))}))
+        else:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Operation not permitted")        
         
     return {"status": "success", "user": user}
 
@@ -67,7 +76,11 @@ def update_me(id: str, payload: schemas.UserUpdateSchema, user_id: str = Depends
         
     payload.updated_at = datetime.utcnow()
         
-    updated_user = User.find_one_and_update({'_id': ObjectId(id)}, {'$set': payload.dict(exclude_none=True)}, return_document=ReturnDocument.AFTER)
+    updated_user = User.find_one_and_update(
+        {'_id': ObjectId(id)}, 
+        {'$set': payload.dict(exclude_none=True)}, 
+        return_document=ReturnDocument.AFTER
+    )
     
     if not updated_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
