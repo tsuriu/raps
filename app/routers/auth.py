@@ -20,9 +20,7 @@ REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 
 
 @router.post('/register', status_code=status.HTTP_201_CREATED)
-async def create_user(payload: schemas.CreateUserSchema, request: Request):
-    payload_run = dict(payload)
-    
+async def create_user(payload: schemas.CreateUserSchema, request: Request):        
     check_dup = {}
     
     if payload.email:
@@ -75,8 +73,11 @@ async def create_user(payload: schemas.CreateUserSchema, request: Request):
             "$set": {"verification_code": None, "updated_at": datetime.utcnow()}})
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail='There was an error sending email')
-    #return {'status': 'success', 'message': 'Verification token successfully sent to your email'}
-    return {'status': 'success', 'verify_link': url, 'message': 'Verification token successfully sent to your email'}
+    
+    if settings.DEVENV:
+        return {'status': 'success', 'verify_link': url, 'message': 'Verification token successfully sent to your email'}
+    else:
+        return {'status': 'success', 'message': 'Verification token successfully sent to your email'}
 
 
 @router.post('/login')

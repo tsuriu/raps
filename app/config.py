@@ -2,6 +2,8 @@ from pydantic import BaseSettings, EmailStr
 
 
 class Settings(BaseSettings):
+    DEVENV: bool = False
+    
     DATABASE_URL: str
     MONGO_INITDB_DATABASE: str
 
@@ -12,6 +14,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str
 
     CLIENT_ORIGIN: str
+    
     VERIFICATION_URL: str
 
     EMAIL_HOST: str
