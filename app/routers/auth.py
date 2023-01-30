@@ -61,12 +61,12 @@ async def create_user(payload: schemas.CreateUserSchema, request: Request):
         User.find_one_and_update({"_id": result.inserted_id}, {
             "$set": {"verification_code": verification_code, "updated_at": datetime.utcnow()}})
 
-        if settings.VERIFICATION_URL:
-            verification_url = settings.VERIFICATION_URL
+        if settings.VERIFICATION_BASE_URL:
+            verification_base_url = settings.VERIFICATION_BASE_URL
         else:
-            verification_url = f"{request.url.scheme}://{request.client.host}:{request.url.port}"
+            verification_base_url = f"{request.url.scheme}://{request.client.host}:{request.url.port}"
             
-        url = f"{verification_url}/api/auth/verifyemail/{token.hex()}"
+        url = f"{verification_base_url}/api/auth/verifyemail/{token.hex()}"
         #await Email(userEntity(new_user), url, [EmailStr(payload.email)]).sendVerificationCode()
     except Exception as error:
         User.find_one_and_update({"_id": result.inserted_id}, {
