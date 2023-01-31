@@ -30,8 +30,4 @@ class Settings(BaseSettings):
     EMAIL_PASSWORD: str
     EMAIL_FROM: EmailStr
 
-    class Config:
-        env_file = './.env'
-
-
 settings = Settings()
