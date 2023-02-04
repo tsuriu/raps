@@ -6,7 +6,7 @@ from app.database import User, Purchase, Raffle
 
 from bson.objectid import ObjectId
 from pymongo.errors import DuplicateKeyError
-from app.serializers.purchaseSerializers import purchaseEntity, purchaseListEntity
+from app.serializers.purchaseSerializers import purchaseEntity, purchaseListEntity, purchaseResponseEntity
 from app.serializers.raffleSerializers import raffleEntity
 from app.routers.raffle import update_raffle
 from app.controllers.purchaseController import auto_bet, check_bets
@@ -21,44 +21,36 @@ allow_user = RoleChecker(["user"])
 router = APIRouter()
 
 @router.post(
-    "/{raffle_id}", 
+    "/{slug}", 
     status_code=status.HTTP_201_CREATED
 )
-def create_purchase(purchase: schemas.CreatePurchaseSchema, raffle_id: str, user_id: str = Depends(require_user)):
+def create_purchase(purchase: schemas.CreatePurchaseSchema, slug: str, user_id: str = Depends(require_user)):
         
     purchase.user = ObjectId(user_id)
-    purchase.raffle = ObjectId(raffle_id)
-    purchase.bet = ""
     purchase.purchased_at = datetime.utcnow()
+    purchase.raffle = slug
     
-    raffle = raffleEntity(Raffle.find_one({"_id": purchase.raffle}))
+    
+    raffle = raffleEntity(Raffle.find_one({"slug": slug}))
     
     if purchase.betting_method == "auto":
         purchase.bet = auto_bet(raffle["selected_bets"].split(","), raffle["quantity"], purchase.quantity)
     
     if purchase.betting_method == "manual":
-        bet_validation = check_bets(raffle_id, purchase.bet)
+        bet_validation = check_bets(slug, purchase.bet)
         if not bet_validation:
-            raise HTTPException(status_code=status.HTTP_409,
-                            detail=f"Fail")            
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Fail manual bet validation")            
     
     new_sorted_bets = { "$set": { 'selected_bets': ",".join([raffle["selected_bets"], purchase.bet])}}
     Raffle.find_one_and_update(
-        {'_id': ObjectId(raffle_id)}, new_sorted_bets, return_document=ReturnDocument.AFTER
+        {'_id': ObjectId(raffle["id"])}, new_sorted_bets, return_document=ReturnDocument.AFTER
     )
     
     try:
         result = Purchase.insert_one(purchase.dict())
-        pipeline = [
-            {'$match': {'_id': result.inserted_id}},
-            {'$lookup': {'from': 'users', 'localField': 'user', 'foreignField': '_id', 'as': 'user'}},
-            {'$lookup': {'from': 'raffles', 'localField': 'raffle', 'foreignField': '_id', 'as': 'raffle'}},
-            {'$unwind': '$user'},
-        ]
-        purchase = purchaseListEntity(Purchase.aggregate(pipeline))[0]
         
-        return {'status': 'success', 'purchase': purchase}
-        
+        return {'status': 'success', 'purchase': {"id": str(result.inserted_id), "bet": purchase.bet}}
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_409,
                             detail=f"Fail")
