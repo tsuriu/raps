@@ -5,7 +5,7 @@ from app.config import settings
 client = mongo_client.MongoClient(settings.DATABASE_URL)
 print('Connected to MongoDB...')
 
-db = client[settings.MONGO_INITDB_DATABASE]
+db = client[settings.DATABASE_NAME]
 
 User = db.users
 Raffle = db.raffles
