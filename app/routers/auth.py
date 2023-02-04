@@ -20,9 +20,7 @@ REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 
 
 @router.post('/register', status_code=status.HTTP_201_CREATED)
-async def create_user(payload: schemas.CreateUserSchema, request: Request):
-    payload_run = dict(payload)
-    
+async def create_user(payload: schemas.CreateUserSchema, request: Request):        
     check_dup = {}
     
     if payload.email:
@@ -63,15 +61,23 @@ async def create_user(payload: schemas.CreateUserSchema, request: Request):
         User.find_one_and_update({"_id": result.inserted_id}, {
             "$set": {"verification_code": verification_code, "updated_at": datetime.utcnow()}})
 
-        url = f"{request.url.scheme}://{request.client.host}:{request.url.port}/api/auth/verifyemail/{token.hex()}"
+        if settings.VERIFICATION_BASE_URL:
+            verification_base_url = settings.VERIFICATION_BASE_URL
+        else:
+            verification_base_url = f"{request.url.scheme}://{request.client.host}:{request.url.port}"
+            
+        url = f"{verification_base_url}/api/auth/verifyemail/{token.hex()}"
         #await Email(userEntity(new_user), url, [EmailStr(payload.email)]).sendVerificationCode()
     except Exception as error:
         User.find_one_and_update({"_id": result.inserted_id}, {
             "$set": {"verification_code": None, "updated_at": datetime.utcnow()}})
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail='There was an error sending email')
-    #return {'status': 'success', 'message': 'Verification token successfully sent to your email'}
-    return {'status': 'success', 'verify_link': url, 'message': 'Verification token successfully sent to your email'}
+    
+    if settings.DEVENV:
+        return {'status': 'success', 'verify_link': url, 'message': 'Verification token successfully sent to your email'}
+    else:
+        return {'status': 'success', 'message': 'Verification token successfully sent to your email'}
 
 
 @router.post('/login')

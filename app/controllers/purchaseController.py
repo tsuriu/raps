@@ -22,8 +22,8 @@ def auto_bet(sorted_numbers: list, max_quotas: int, samples: int):
     return ",".join(str(v) for v in bet)
 
 
-def check_bets(raffle_id: str, bet: str):
-    raffle = raffleEntity(Raffle.find_one({"_id": raffle_id}))
+def check_bets(slug: str, bet: str):
+    raffle = raffleEntity(Raffle.find_one({"slug": slug}))
     
     raffle_selected_bets = raffle["selected_bets"].split(",")
     user_bet = bet.split(",")

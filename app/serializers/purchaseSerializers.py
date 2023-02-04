@@ -18,7 +18,7 @@ def populatePurchaseEntity(purchase) -> dict:
     return {
         "id": str(purchase["_id"]),
         "user": embeddedUserResponse(purchase["user"]),
-        "raffle": embeddedRaffleResponse(purchase["raffle"]),
+        "raffle": str(purchase["raffle"]),
         "quantity": purchase["quantity"],
         "status": purchase["status"],
         "betting_method": purchase["betting_method"],
@@ -30,7 +30,7 @@ def embeddedPurchaseResponse(purchase) -> dict:
     return {
         "id": str(purchase["_id"]),
         "user": embeddedUserResponse(purchase["user"]),
-        "raffle": embeddedRaffleResponse(purchase["raffle"]),
+        "raffle": str(purchase["raffle"]),
         "quantity": purchase["quantity"],
         "status": purchase["status"],
         "betting_method": purchase["betting_method"],
@@ -39,7 +39,16 @@ def embeddedPurchaseResponse(purchase) -> dict:
     }
 
 def purchaseResponseEntity(purchase) -> dict:
-    return {}
+    return {
+        "id": str(purchase["_id"]),
+        "user": str(purchase["user"]),
+        "raffle": str(purchase["raffle"]),
+        "quantity": purchase["quantity"],
+        "status": purchase["status"],
+        "betting_method": purchase["betting_method"],
+        "purchased_at": purchase["purchased_at"],
+        "bet": purchase["bet"]
+    }
 
 def purchaseListEntity(purchases) -> list:
     return [purchaseEntity(purchase) for purchase in purchases]
