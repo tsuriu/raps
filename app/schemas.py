@@ -64,6 +64,7 @@ class SessionBaseSchema(BaseModel):
     class Config:
         orm_mode = True
 
+
 class SessionResponse(BaseModel):
     id: str
     user: FilteredUserResponse
@@ -90,8 +91,8 @@ class RaffleBaseSchema(BaseModel):
     title: str
     slug: str
     phone: str
-    prize: list #List[RafflePrizeBaseSchema]
-    promotion: list #List[RafflePromotionBaseSchame]
+    prize: list 
+    promotion: list 
     description: str
     quantity: int
     category: str
@@ -99,7 +100,7 @@ class RaffleBaseSchema(BaseModel):
     quota_value: float
     expire_reserve: str
     betting_method: str
-    selected_bets: str
+    selected_bets: Optional[list] = Field([])
     prize_draw_date: str
     prize_draw_place: str
     published: bool = False
@@ -119,15 +120,15 @@ class RaffleUpdateSchema(BaseModel):
     image: str | None = None
     description: str | None = None
     phone: str | None = None
-    prize: list | None = None #List[RafflePrizeBaseSchema] | None = None
-    promotion: list | None = None #List[RafflePromotionBaseSchame]| None = None
+    prize: list | None = None
+    promotion: list | None = None
     quantity: int | None = None
     category: str | None = None
     max_buy_quantity: int | None = None
     quota_value: float | None = None
     expire_reserve: str | None = None
     betting_method: str | None = None
-    selected_bets: str | None = None
+    selected_bets: list | None = None
     prize_draw_date: str | None = None
     prize_draw_place: str | None = None  
     published: bool | None = None
@@ -154,8 +155,8 @@ class RaffleResponse(RaffleBaseSchema):
     title: str
     slug: str
     phone: str
-    prize: str #List[RafflePrizeBaseSchema]
-    promotion: str #List[RafflePromotionBaseSchame]
+    prize: str
+    promotion: str
     description: str
     quantity: int
     category: str
@@ -180,7 +181,7 @@ class PurchaseBaseSchema(BaseModel):
     status: str
     betting_method: str 
     purchased_at: datetime  | None = None
-    bet: str | None = None
+    bet: Optional[list] = Field([])
     
     class Config:
         orm_mode = True
@@ -196,7 +197,7 @@ class PurchaseUpdateSchema(BaseModel):
     status: str | None = None
     betting_method: str | None = None
     purchased_at: datetime | None = None
-    bet: str | None = None
+    bet: list | None = None
     
     class Config:
         orm_mode = True
@@ -208,6 +209,17 @@ class PurchaseUpdateSchema(BaseModel):
 class CreatePurchaseSchema(PurchaseBaseSchema):
     user: ObjectId | None = None  
     raffle: ObjectId | None = None
+    
+
+class PurchaseResponse(PurchaseBaseSchema):
+    raffle: str
+    user: FilteredUserResponse
+    quantity: int
+    status: str
+    betting_method: str 
+    purchased_at: datetime  | None = None
+    bet: list | None = None
+    
 
 
 

@@ -76,12 +76,12 @@ def get_raffles(limit: int = 10, page: int = 1, only_my: bool = True, search: st
     if search:
         s = json.loads(search)
         raffles = [raffle for raffle in raffles if raffle[list(s.keys())[0]] == s[list(s.keys())[0]]]
-        return raffles
+
     else:    
         if only_my:
             raffles = [raffle for raffle in raffles if raffle["user"]["id"] == user_id]
         
-        return {'status': 'success', 'results': len(raffles), 'raffles': raffles}
+    return {'status': 'success', 'results': len(raffles), 'raffles': raffles}
 
 
 @router.get("/{id}")

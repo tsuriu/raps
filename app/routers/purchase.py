@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from pymongo.collection import ReturnDocument
@@ -34,15 +35,15 @@ def create_purchase(purchase: schemas.CreatePurchaseSchema, slug: str, user_id: 
     raffle = raffleEntity(Raffle.find_one({"slug": slug}))
     
     if purchase.betting_method == "auto":
-        purchase.bet = auto_bet(raffle["selected_bets"].split(","), raffle["quantity"], purchase.quantity)
+        purchase.bet = auto_bet(raffle["selected_bets"], raffle["quantity"], purchase.quantity)
     
     if purchase.betting_method == "manual":
         bet_validation = check_bets(slug, purchase.bet)
-        if not bet_validation:
+        if bet_validation:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail=f"Fail manual bet validation")            
+                            detail={"msg":f"This follow bets are not valid.", "content": bet_validation})            
     
-    new_sorted_bets = { "$set": { 'selected_bets': ",".join([raffle["selected_bets"], purchase.bet])}}
+    new_sorted_bets = { "$set": { 'selected_bets': [*raffle["selected_bets"], *purchase.bet]}}
     Raffle.find_one_and_update(
         {'_id': ObjectId(raffle["id"])}, new_sorted_bets, return_document=ReturnDocument.AFTER
     )
@@ -72,8 +73,13 @@ def get_purchases(limit: int = 10, page: int = 1, only_my: bool = False, search:
     
     purchases = purchaseListEntity(Purchase.aggregate(pipeline))
     
-    if only_my:
-        purchases = [purchase for purchase in purchases if purchase["user"]["id"] == user_id]
+    if search:
+        s = json.loads(search)
+        purchases = [purchase for purchase in purchases if purchase[list(s.keys())[0]] == s[list(s.keys())[0]]]
+
+    else:    
+        if only_my:
+            purchases = [purchase for purchase in purchases if purchase["user"]["id"] == user_id]
         
     return {'status': 'success', 'results': len(purchases), 'purchases': purchases}
 
