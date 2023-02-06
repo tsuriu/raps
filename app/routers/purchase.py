@@ -9,7 +9,6 @@ from bson.objectid import ObjectId
 from pymongo.errors import DuplicateKeyError
 from app.serializers.purchaseSerializers import purchaseEntity, purchaseListEntity, purchaseResponseEntity
 from app.serializers.raffleSerializers import raffleEntity
-from app.routers.raffle import update_raffle
 from app.controllers.purchaseController import auto_bet, check_bets
 
 from .. import schemas, oauth2
