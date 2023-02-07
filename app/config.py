@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     CLIENT_ORIGIN: str
     
     VERIFICATION_BASE_URL: str
+    
+    MP_TOKEN: str
 
     EMAIL_HOST: str
     EMAIL_PORT: int

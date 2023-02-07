@@ -18,8 +18,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/{id}", 
-    dependencies=[Depends(allow_raffle_creation)], 
+    "/{id}",
     response_model=schemas.UserResponse
 )
 def get_user(id: str, user_id: str = Depends(oauth2.require_user)):
@@ -31,7 +30,7 @@ def get_user(id: str, user_id: str = Depends(oauth2.require_user)):
         user = userResponseEntity(User.find_one({'_id': ObjectId(str(user_id))}))
     else:
         user_check = userEntity(User.find_one({'_id': ObjectId(str(user_id))}))
-        if user_check["role"] == "admin":
+        if user_check["role"] == "admin" or user_id == user_check:
             user = userResponseEntity(User.find_one({'_id': ObjectId(str(id))}))
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
