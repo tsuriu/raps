@@ -7,11 +7,13 @@ from app.database import User, Purchase, Raffle
 
 from bson.objectid import ObjectId
 from pymongo.errors import DuplicateKeyError
+from app.serializers.userSerializers import userEntity
 from app.serializers.purchaseSerializers import purchaseEntity, purchaseListEntity, purchaseResponseEntity
 from app.serializers.raffleSerializers import raffleEntity
 from app.controllers.purchaseController import auto_bet, check_bets
+from app.controllers.paymentController import MP
 
-from .. import schemas, oauth2
+from .. import schemas
 
 from app.oauth2 import require_user, RoleChecker
 
@@ -25,13 +27,12 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED
 )
 def create_purchase(purchase: schemas.CreatePurchaseSchema, slug: str, user_id: str = Depends(require_user)):
-        
     purchase.user = ObjectId(user_id)
     purchase.purchased_at = datetime.utcnow()
     purchase.raffle = slug
-    
-    
+        
     raffle = raffleEntity(Raffle.find_one({"slug": slug}))
+    user = userEntity(User.find_one({"_id": purchase.user}))
     
     if purchase.betting_method == "auto":
         purchase.bet = auto_bet(raffle["selected_bets"], raffle["quantity"], purchase.quantity)
@@ -40,20 +41,61 @@ def create_purchase(purchase: schemas.CreatePurchaseSchema, slug: str, user_id: 
         bet_validation = check_bets(slug, purchase.bet)
         if bet_validation:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail={"msg":f"This follow bets are not valid.", "content": bet_validation})            
-    
+                            detail={"msg":f"This follow bets are not valid.", "content": bet_validation})
+            
+
+
     new_sorted_bets = { "$set": { 'selected_bets': [*raffle["selected_bets"], *purchase.bet]}}
     Raffle.find_one_and_update(
         {'_id': ObjectId(raffle["id"])}, new_sorted_bets, return_document=ReturnDocument.AFTER
     )
     
+    raffle_title = raffle["title"]
+    
+    payment_data = {
+        "total_value": purchase.quantity * raffle["quota_value"],
+        "description": f"Compra de {purchase.quantity} cotas para a campanha {raffle_title}.",
+        "payment_method": "pix",
+        "client_email": user["email"],
+        "client_fname": (user["name"].split(" "))[0],
+        "client_lname": (user["name"].split(" "))[-1]        
+    }
+    
+    if len(raffle["promotion"]) == 1 and purchase.quantity >= (raffle["promotion"][0])["raffle_qtd"]:
+        payment_data["discount_value"] = (raffle["promotion"][0])["raffle_discount"]
+    
+    if len(raffle["promotion"]) > 1:
+        for idx, promo in enumerate(raffle["promotion"]):
+            if promo["raffle_qtd"] <= purchase.quantity and (raffle["promotion"][idx+1])["raffle_qtd"] >= purchase.quantity:
+                payment_data["discount_value"] = promo["raffle_discount"]
+                
     try:
-        result = Purchase.insert_one(purchase.dict())
+        payment = MP()
+        payment_res = payment.create_payment(payment_data)
         
-        return {'status': 'success', 'purchase': {"id": str(result.inserted_id), "bet": purchase.bet}}
+        purchase.payment_id = payment_res["id"]
+        try:
+            result = Purchase.insert_one(purchase.dict())
+                
+            return {
+                'status': 'success', 
+                'purchase': {
+                    "id": str(result.inserted_id),
+                    "bet": purchase.bet
+                },
+                "payment": {
+                    "id": payment_res["id"],
+                    "qrcode": payment_res["point_of_interaction"]["transaction_data"]["qr_code"],
+                    "qr_code_base64": payment_res["point_of_interaction"]["transaction_data"]["qr_code_base64"]
+                }
+            }
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f"Fail")
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_409,
-                            detail=f"Fail")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Fail to process payment")                
+
         
 @router.get("/")
 def get_purchases(limit: int = 10, page: int = 1, only_my: bool = False, search: str = '', user_id: str = Depends(require_user)):
@@ -61,7 +103,6 @@ def get_purchases(limit: int = 10, page: int = 1, only_my: bool = False, search:
     pipeline = [
         {'$match': {}},
         {'$lookup': {'from': 'users', 'localField': 'user', 'foreignField': '_id', 'as': 'user'}},
-        {'$lookup': {'from': 'raffles', 'localField': 'raffle', 'foreignField': '_id', 'as': 'raffle'}},
         {'$unwind': '$user'},
         {
             '$skip': skip

@@ -179,7 +179,8 @@ class PurchaseBaseSchema(BaseModel):
     user: str
     quantity: int
     status: str
-    betting_method: str 
+    betting_method: str
+    payment_id: Optional[int] = Field(None)
     purchased_at: datetime  | None = None
     bet: Optional[list] = Field([])
     
@@ -196,6 +197,7 @@ class PurchaseUpdateSchema(BaseModel):
     quantity: int | None = None
     status: str | None = None
     betting_method: str | None = None
+    payment_id: int | None = None
     purchased_at: datetime | None = None
     bet: list | None = None
     
@@ -217,11 +219,12 @@ class PurchaseResponse(PurchaseBaseSchema):
     quantity: int
     status: str
     betting_method: str 
-    purchased_at: datetime  | None = None
-    bet: list | None = None
+    payment_id: int
+    purchased_at: datetime
+    bet: list
     
-
-
+class ListPurchaseResponse(BaseModel):
+    purchases: List[PurchaseResponse]
 
 
 class PostBaseSchema(BaseModel):

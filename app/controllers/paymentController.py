@@ -27,8 +27,7 @@ class MP:
                 "email": build_data["client_email"],
                 "first_name": build_data["client_fname"],
                 "last_name": build_data["client_lname"]                                
-            },
-            "date_of_expiration": "2022-11-17T09:37:52.000-04:00"
+            }
         }
         
         if "reserve_time" in build_data.keys():
@@ -49,17 +48,22 @@ class MP:
         
     def get_payment(self, payment_id=None):
         try:
-            payment_response = self.sdk.payment().get(payment_id=payment_id)
+            if payment_id:
+                payment_response = self.sdk.payment().get(payment_id=payment_id)
+            else:
+                payment_response = self.sdk.payment().search()
+                
             return payment_response["response"]
         except Exception as e:
             return e
         
         
-    def cancel_payment(self, payment_id):
-        payment_data = {"status": "cancelled"}
+    def update_payment(self, payment_id, action_type=None, paymant_body=None):
+        if action_type == "C":
+            paymant_body = {"status": "cancelled"}
         
         try:
-            payment_response = self.sdk.payment().update(payment_id, payment_data)
+            payment_response = self.sdk.payment().update(payment_id, paymant_body)
             return payment_response["response"]
         except Exception as e:
             return e
