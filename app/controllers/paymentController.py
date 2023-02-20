@@ -10,12 +10,10 @@ class MP:
         
         
     def __datetime_worker__(self, inicial_date, reserve_time):
-        date_format_str = '%Y-%m-%dT%H:%M:%S.%fZ'
-        
-        given_time = datetime.strptime(inicial_date, date_format_str)
-        final_time = given_time + timedelta(minutes=reserve_time)
+        given_time = inicial_date + timedelta(minutes=reserve_time)
+        final_time = given_time.astimezone().isoformat()
                
-        return final_time.strftime(date_format_str)
+        return final_time
     
     
     def create_payment(self, build_data):
