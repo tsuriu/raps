@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     DATABASE_PORT: int
     
     MONGO_INITDB_DATABASE: str
+    PURCHASE_PAYMENT_EXPIRE_TIME: int
     
     DATABASE_URL: str
 

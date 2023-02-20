@@ -16,6 +16,7 @@ from app.controllers.paymentController import MP
 from .. import schemas
 
 from app.oauth2 import require_user, RoleChecker
+from app.config import settings
 
 allow_admin = RoleChecker(["admin"])
 allow_user = RoleChecker(["user"])
@@ -56,10 +57,14 @@ def create_purchase(purchase: schemas.CreatePurchaseSchema, slug: str, user_id: 
         "total_value": purchase.quantity * raffle["quota_value"],
         "description": f"Compra de {purchase.quantity} cotas para a campanha {raffle_title}.",
         "payment_method": "pix",
-        "client_email": user["email"],
+        "reserve_time": settings.PURCHASE_PAYMENT_EXPIRE_TIME,
+        "created_at": purchase.purchased_at,
         "client_fname": (user["name"].split(" "))[0],
         "client_lname": (user["name"].split(" "))[-1]        
     }
+    
+    if user["role"] == "cli":
+        payment_data["client_email"] = "huandersonferreira7@gmail.com"
     
     if len(raffle["promotion"]) == 1 and purchase.quantity >= (raffle["promotion"][0])["raffle_qtd"]:
         payment_data["discount_value"] = (raffle["promotion"][0])["raffle_discount"]
