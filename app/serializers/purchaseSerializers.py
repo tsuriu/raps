@@ -1,4 +1,4 @@
-from app.serializers.userSerializers import embeddedUserResponse
+from app.serializers.userSerializers import embeddedUserResponse, userResponseEntity
 from app.serializers.raffleSerializers import embeddedRaffleResponse
 
 
@@ -43,9 +43,8 @@ def embeddedPurchaseResponse(purchase) -> dict:
 
 def purchaseResponseEntity(purchase) -> dict:
     return {
-        "id": str(purchase["_id"]),
-        "user": str(purchase["user"]),
-        "raffle": str(purchase["raffle"]),
+        "user": embeddedUserResponse(purchase["user"]),
+        "raffle": embeddedRaffleResponse(purchase["raffle"]),
         "quantity": purchase["quantity"],
         "status": purchase["status"],
         "betting_method": purchase["betting_method"],
