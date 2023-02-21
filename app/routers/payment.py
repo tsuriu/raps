@@ -8,6 +8,7 @@ from pymongo.errors import DuplicateKeyError
 
 from app.database import Purchase
 from app.serializers.purchaseSerializers import purchaseResponseEntity
+from app.serializers.paymentSerializers import paymentListEntity, paymentEntity
 from app.oauth2 import require_user
 from app.controllers.paymentController import MP
 
@@ -24,23 +25,25 @@ router = APIRouter()
 def get_payments(limit: int = 30, page: int = 1, only_my: bool = True, search: str = "", user_id: str = Depends(require_user)):
     mp = MP()
     payments = mp.get_payment()
-    
-    purchases = []
-    
-    for payment in payments:
-        purchase = purchaseResponseEntity(Purchase.find_one({"payment_id": payment["payment_id"]}))
-        purchase["payment"] = payment
+    payments = paymentListEntity(payments["results"])
         
-        purchases.append(purchase)
-    
     if search:
         search = json.loads(search)
+        
+        payments = [payment for payment in payments if search]
     
     
-    return {"status": "success", "size": len(payments), "payments": purchases}
+    return {"status": "success", "size": len(payments), "payments": payments}
 
     
 @router.get("/{id}")
 def get_payment(id: int, user_id: str = Depends(require_user)):
     mp = MP()
     payment = mp.get_payment(payment_id=id)
+    payment = paymentEntity(payment)
+    
+    if payment:
+        return {"status": "success", "payments": paymentEntity(payment)}
+    else:
+        raise HTTPException(status_code=status.HTTP_204_NO_CONTENT,
+                            detail=f"Payment {id} not found.")
