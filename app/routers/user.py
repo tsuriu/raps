@@ -27,16 +27,16 @@ def get_user(id: str, user_id: str = Depends(oauth2.require_user)):
                             detail=f"Invalid id: {user_id}")
         
     if id == "me":
-        user = userResponseEntity(User.find_one({'_id': ObjectId(str(user_id))}))
+        user = userEntity(User.find_one({'_id': ObjectId(str(user_id))}))
     else:
         user_check = userEntity(User.find_one({'_id': ObjectId(str(user_id))}))
         if user_check["role"] == "admin" or user_id == user_check:
-            user = userResponseEntity(User.find_one({'_id': ObjectId(str(id))}))
+            user = userEntity(User.find_one({'_id': ObjectId(str(id))}))
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Operation not permitted")        
         
-    return {"status": "success", "user": user}
+    return {"status": "success", "user": userResponseEntity(user)}
 
 
 @router.get("/")
