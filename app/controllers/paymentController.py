@@ -11,7 +11,7 @@ class MP:
         
     def __datetime_worker__(self, inicial_date, reserve_time):
         given_time = inicial_date + timedelta(minutes=reserve_time)
-        final_time = given_time.astimezone().isoformat()
+        final_time = given_time.astimezone().isoformat(timespec="milliseconds")
                
         return final_time
     
@@ -31,7 +31,7 @@ class MP:
         if "reserve_time" in build_data.keys():
             payment_data["date_of_expiration"] = self.__datetime_worker__(
                                                                 build_data["created_at"], 
-                                                                build_data["reserve_times"]
+                                                                build_data["reserve_time"]
                                         )
 
         if "discount_value" in build_data.keys():
