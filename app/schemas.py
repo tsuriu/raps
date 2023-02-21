@@ -48,7 +48,7 @@ class UserResponseSchema(UserBaseSchema):
 
 class UserResponse(BaseModel):
     status: str
-    user: UserResponseSchema
+    user: UserBaseSchema
 
 
 class FilteredUserResponse(UserBaseSchema):
@@ -178,7 +178,7 @@ class PurchaseBaseSchema(BaseModel):
     raffle: str
     user: str
     quantity: int
-    status: str
+    status: Optional[str] = Field(None)
     betting_method: str
     payment_id: Optional[int] = Field(None)
     purchased_at: datetime  | None = None

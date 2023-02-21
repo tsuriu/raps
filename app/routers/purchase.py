@@ -28,6 +28,7 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED
 )
 def create_purchase(purchase: schemas.CreatePurchaseSchema, slug: str, user_id: str = Depends(require_user)):
+    purchase.status = "reserved"
     purchase.user = ObjectId(user_id)
     purchase.purchased_at = datetime.utcnow()
     purchase.raffle = slug
