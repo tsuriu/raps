@@ -10,7 +10,7 @@ class MP:
         
         
     def __datetime_worker__(self, inicial_date, reserve_time):
-        given_time = inicial_date + timedelta(minutes=reserve_time)
+        given_time = inicial_date + timedelta(minutes=int(reserve_time))
         final_time = given_time.astimezone().isoformat(timespec="milliseconds")
                
         return final_time
@@ -37,8 +37,11 @@ class MP:
         if "discount_value" in build_data.keys():
             payment_data["coupon_amount"] = build_data["discount_value"]
         
+        payment_response = self.sdk.payment().create(payment_data)
+        print(payment_response)
+        
         try:
-            payment_response = self.sdk.payment().create(payment_data)
+            
             return payment_response["response"]
         except Exception as e:
             return e

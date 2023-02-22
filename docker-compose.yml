@@ -31,7 +31,7 @@ services:
     volumes:
       - mongo:/data/db
     ports:
-      - '6000:27017'
+      - '27017:27017'
     networks:
       - rifiatu_api
 

@@ -64,7 +64,9 @@ def create_purchase(purchase: schemas.CreatePurchaseSchema, slug: str, user_id: 
     }
     
     if user["role"] == "cli":
-        payment_data["client_email"] = "huandersonferreira7@gmail.com"
+        payment_data["client_email"] = "tulioromeror@gmail.com"
+    else:
+        payment_data["client_email"] = user["email"]
     
     if len(raffle["promotion"]) == 1 and purchase.quantity >= (raffle["promotion"][0])["raffle_qtd"]:
         payment_data["discount_value"] = (raffle["promotion"][0])["raffle_discount"]
