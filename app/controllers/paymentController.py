@@ -38,7 +38,6 @@ class MP:
             payment_data["coupon_amount"] = build_data["discount_value"]
         
         payment_response = self.sdk.payment().create(payment_data)
-        print(payment_response)
         
         try:
             

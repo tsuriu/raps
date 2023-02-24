@@ -93,7 +93,10 @@ def create_purchase(purchase: schemas.CreatePurchaseSchema, slug: str, user_id: 
                 "payment": {
                     "id": payment_res["id"],
                     "qrcode": payment_res["point_of_interaction"]["transaction_data"]["qr_code"],
-                    "qr_code_base64": payment_res["point_of_interaction"]["transaction_data"]["qr_code_base64"]
+                    "qr_code_base64": payment_res["point_of_interaction"]["transaction_data"]["qr_code_base64"],
+                    "total_paid_amount": payment_res["transaction_details"]["total_paid_amount"],
+                    "transaction_amount": payment_res["transaction_amount"],
+                    "date_of_expiration": payment_res["date_of_expiration"]
                 }
             }
         except Exception as e:
