@@ -6,6 +6,7 @@ def prizeEntity(prize) -> dict:
         "prize_description": str(prize["prize_description"])
     }
     
+
 def promotionEntity(promotion) -> dict:
     return {
         "raffle_qtd": promotion["raffle_qtd"],
@@ -25,6 +26,7 @@ def raffleEntity(raffle) -> dict:
         "promotion": raffle["promotion"], 
         "description": str(raffle["description"]),
         "quantity": raffle["quantity"],
+        "available_bet": raffle["available_bet"],
         "category": raffle["category"],
         "max_buy_quantity": raffle["max_buy_quantity"],
         "quota_value": raffle["quota_value"],
@@ -33,11 +35,15 @@ def raffleEntity(raffle) -> dict:
         "selected_bets": raffle["selected_bets"],
         "prize_draw_date": raffle["prize_draw_date"],
         "prize_draw_place": raffle["prize_draw_place"],
+        "payment_id": raffle["payment_id"],
+        "publish_tax": raffle["publish_tax"],
+        "total_value_return": raffle["total_value_return"],
         "published": raffle["published"],
         "published_at": raffle["published_at"],
         "created_at": raffle["created_at"],
         "updated_at": raffle["updated_at"]    
     }
+
 
 def populateRaffleEntity(raffle) -> dict:
     return {
@@ -51,6 +57,7 @@ def populateRaffleEntity(raffle) -> dict:
         "promotion": raffle["promotion"], 
         "description": str(raffle["description"]),
         "quantity": raffle["quantity"],
+        "available_bet": raffle["available_bet"],
         "category": raffle["category"],
         "max_buy_quantity": raffle["max_buy_quantity"],
         "quota_value": raffle["quota_value"],
@@ -59,12 +66,16 @@ def populateRaffleEntity(raffle) -> dict:
         "selected_bets": raffle["selected_bets"],
         "prize_draw_date": raffle["prize_draw_date"],
         "prize_draw_place": raffle["prize_draw_place"],
+        "payment_id": raffle["payment_id"],
+        "publish_tax": raffle["publish_tax"],
+        "total_value_return": raffle["total_value_return"],
         "published": raffle["published"],
         "published_at": raffle["published_at"],
         "created_at": raffle["created_at"],
         "updated_at": raffle["updated_at"]    
     }
     
+
 def embeddedRaffleResponse(raffle) -> dict:
     return {
         "id": str(raffle["_id"]),
@@ -77,6 +88,7 @@ def embeddedRaffleResponse(raffle) -> dict:
         "promotion": raffle["promotion"], 
         "description": str(raffle["description"]),
         "quantity": raffle["quantity"],
+        "available_bet": raffle["available_bet"],
         "category": raffle["category"],
         "max_buy_quantity": raffle["max_buy_quantity"],
         "quota_value": raffle["quota_value"],
@@ -85,10 +97,14 @@ def embeddedRaffleResponse(raffle) -> dict:
         "selected_bets": raffle["selected_bets"],
         "prize_draw_date": raffle["prize_draw_date"],
         "prize_draw_place": raffle["prize_draw_place"],
+        "payment_id": raffle["payment_id"],
+        "publish_tax": raffle["publish_tax"],
+        "total_value_return": raffle["total_value_return"],
         "published": raffle["published"],
         "created_at": raffle["created_at"]                         
     }
-    
+
+
 def raffleResponseEntity(raffle) -> dict:
     return {
         "user": embeddedUserResponse_NoAuth(raffle["user"]),
@@ -112,6 +128,7 @@ def raffleResponseEntity(raffle) -> dict:
         "published": raffle["published"],
         "created_at": raffle["created_at"],
     }
+
 
 def raffleListEntity(raffles) -> list:
     return [populateRaffleEntity(raffle) for raffle in raffles]

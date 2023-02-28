@@ -10,6 +10,9 @@ from pymongo.errors import DuplicateKeyError
 from app.serializers.raffleSerializers import prizeEntity, raffleResponseEntity, raffleEntity, raffleListEntity
 from app.serializers.userSerializers import userEntity
 
+from app.controllers.paymentController import MP
+from app.controllers.parametersController import calc_raffle_taxes
+
 from app.database import User
 from .. import schemas, oauth2
 
@@ -29,6 +32,9 @@ def create_raffle(raffle: schemas.CreateRaffleSchema, user_id: str = Depends(req
     raffle.user = ObjectId(user_id)
     raffle.created_at = datetime.utcnow()
     raffle.updated_at = raffle.created_at
+    raffle.available_bet = raffle.quantity
+    
+    user = userEntity(User.find_one({"_id": raffle.user}))
     
     check_slug = False #get_raffles(search=str({"slug": raffle.slug}), only_my=False)
     
@@ -38,22 +44,55 @@ def create_raffle(raffle: schemas.CreateRaffleSchema, user_id: str = Depends(req
     if raffle.slug and check_slug:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail=f"Raffle with title: '{raffle.slug}' already exists")
+        
+        
+    raffle_publish_tax, raffle_total_value_return = calc_raffle_taxes(raffle.dict())
+    raffle_publish_payment_lifetime = 1
+    
+    raffle.publish_tax = raffle_publish_tax
+    raffle.total_value_return = raffle_total_value_return
+    
+    payment_data = {
+        "total_value": raffle_publish_tax,
+        "description": f" Taxa de publicao da rifa {raffle.title}.",
+        "payment_method": "pix",
+        "reserve_time": raffle_publish_payment_lifetime,
+        "created_at": raffle.created_at,
+        "client_fname": (user["name"].split(" "))[0],
+        "client_lname": (user["name"].split(" "))[-1],
+        "client_email": user["email"]        
+    }
     
     try:
+        payment = MP()
+        payment_res = payment.create_payment(payment_data)
+        
+        raffle.payment_id = payment_res["id"]
+        
         result = Raffle.insert_one(raffle.dict())
         pipeline = [
             {'$match': {'_id': result.inserted_id}},
             {'$lookup': {'from': 'users', 'localField': 'user',
-                         'foreignField': '_id', 'as': 'user'}},
+                        'foreignField': '_id', 'as': 'user'}},
             {'$unwind': '$user'},
         ]
         raffle = raffleListEntity(Raffle.aggregate(pipeline))[0]
         
-        return {'status': 'success', 'raffle': raffle}
-        
-    except DuplicateKeyError:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail=f"Raffle with title: '{raffle.title}' already exists")
+        return {
+            'status': 'success', 
+            'raffle': raffle,
+            "payment": {
+                "id": payment_res["id"],
+                "qrcode": payment_res["point_of_interaction"]["transaction_data"]["qr_code"],
+                "qr_code_base64": payment_res["point_of_interaction"]["transaction_data"]["qr_code_base64"],
+                "total_paid_amount": payment_res["transaction_details"]["total_paid_amount"],
+                "transaction_amount": payment_res["transaction_amount"],
+                "date_of_expiration": payment_res["date_of_expiration"]
+            }                
+        }
+            
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
         
         
 @router.get("/")
