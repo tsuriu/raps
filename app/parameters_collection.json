@@ -1,0 +1,42 @@
+[
+    {
+        "config_description": "raffle_publishment_taxes",
+        "taxes": [
+            {"billingRate": 0 ,"rate": 5.25},
+            {"billingRate": 100 ,"rate": 12.75},
+            {"billingRate": 200 ,"rate": 20.25},
+            {"billingRate": 400 ,"rate": 27.75},
+            {"billingRate": 700 ,"rate": 35.25},
+            {"billingRate": 1000 ,"rate": 50.25},
+            {"billingRate": 2000 ,"rate": 57.75},
+            {"billingRate": 4000 ,"rate": 95.25},
+            {"billingRate": 7000 ,"rate": 185.25},
+            {"billingRate": 10000 ,"rate": 222.75},
+            {"billingRate": 20000 ,"rate": 372.75},
+            {"billingRate": 30000 ,"rate": 747.75},
+            {"billingRate": 50000 ,"rate": 1122.75},
+            {"billingRate": 70000 ,"rate": 1497.75},
+            {"billingRate": 100000 ,"rate": 2247.75},
+            {"billingRate": 150000 ,"rate": 2997.75}
+        ]
+    },
+    {
+        "config_description": "admin_payments",
+        "data": [
+            {
+                "channel_name": "mercado_pago",
+                "dev_token": "TEST-3877415641130856-020514-5ea03b49d7d73dde0b6ed61a4142c4f2-1303374801",
+                "prd_token": "APP_USR-3877415641130856-020514-33f1d76b035ecc2259ee721daacc480d-1303374801" 
+            }
+        ]
+    },
+    {
+        "config_description": "auth_config_elements",
+        "data": {
+            "verification_base_url": "http://localhost:8000",
+            "access_token_expires_in": 60,
+            "refresh_token_expires_in": 60,
+            "jwt_algorithm": "RS256"
+        }
+    }
+]
