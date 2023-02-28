@@ -2,11 +2,12 @@ from datetime import datetime, timedelta
 
 import mercadopago
 from app.config import settings
+from app.controllers.parametersController import get_admin_payment_auth_token
 
 class MP:
     def __init__(self):
-        self.mp_token = settings.MP_TOKEN
-        self.sdk = mercadopago.SDK(self.mp_token)
+        self.platform = "mercado_pago"
+        self.sdk = mercadopago.SDK(self.__auth_data__())
         
         
     def __datetime_worker__(self, inicial_date, reserve_time):
@@ -15,6 +16,10 @@ class MP:
                
         return final_time
     
+    
+    def __auth_data__(self):
+        return get_admin_payment_auth_token(self.platform)
+        
     
     def create_payment(self, build_data):
         payment_data = {
@@ -28,7 +33,7 @@ class MP:
             }
         }
         
-        if "reserve_time" in build_data.keys():
+        if ("reserve_time" in build_data.keys()) or (build_data["reserve_time"] != 0):
             payment_data["date_of_expiration"] = self.__datetime_worker__(
                                                                 build_data["created_at"], 
                                                                 build_data["reserve_time"]

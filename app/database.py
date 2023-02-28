@@ -11,8 +11,10 @@ User = db.users
 Raffle = db.raffles
 Purchase = db.purchase
 Session = db.sessions
+Parameters = db.parameters
 
 User.create_index([("email", pymongo.ASCENDING)], unique=True)
 Raffle.create_index([("title", pymongo.ASCENDING)], unique=True)
 Purchase.create_index([("bet", pymongo.ASCENDING)], unique=True)
 Session.create_index([("key", pymongo.ASCENDING)], unique=True)
+Parameters.create_index([("config_description", pymongo.ASCENDING)], unique=True)

@@ -9,14 +9,18 @@ from app import oauth2
 from app.database import User
 from app.email import Email
 from app.serializers.userSerializers import userEntity, userResponseEntity
+from app.controllers.parametersController import get_auth_params
+
 from .. import schemas, utils
 from app.oauth2 import AuthJWT, denylist
 from ..config import settings
 
+auth_params = get_auth_params()
 
 router = APIRouter()
-ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRES_IN
-REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
+ACCESS_TOKEN_EXPIRES_IN = auth_params["access_token_expires_in"]
+REFRESH_TOKEN_EXPIRES_IN = auth_params["refresh_token_expires_in"]
+VERIFICATION_BASE_URL = auth_params["verification_base_url"]
 
 
 @router.post('/register', status_code=status.HTTP_201_CREATED)
@@ -61,8 +65,8 @@ async def create_user(payload: schemas.CreateUserSchema, request: Request):
         User.find_one_and_update({"_id": result.inserted_id}, {
             "$set": {"verification_code": verification_code, "updated_at": datetime.utcnow()}})
 
-        if settings.VERIFICATION_BASE_URL:
-            verification_base_url = settings.VERIFICATION_BASE_URL
+        if VERIFICATION_BASE_URL:
+            verification_base_url = VERIFICATION_BASE_URL
         else:
             verification_base_url = f"{request.url.scheme}://{request.client.host}:{request.url.port}"
             

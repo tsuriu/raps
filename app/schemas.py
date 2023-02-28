@@ -95,6 +95,7 @@ class RaffleBaseSchema(BaseModel):
     promotion: list 
     description: str
     quantity: int
+    available_bet: Optional[int] = Field(None)
     category: str
     max_buy_quantity: int
     quota_value: float
@@ -103,7 +104,10 @@ class RaffleBaseSchema(BaseModel):
     selected_bets: Optional[list] = Field([])
     prize_draw_date: str
     prize_draw_place: str
+    payment_id: Optional[int] = Field(None)
     published: bool = False
+    publish_tax: Optional[float] = Field(None)
+    total_value_return: Optional[float] = Field(None)
     published_at: datetime | None = None
     created_at: datetime | None = None
     updated_at: datetime | None = None
@@ -123,14 +127,18 @@ class RaffleUpdateSchema(BaseModel):
     prize: list | None = None
     promotion: list | None = None
     quantity: int | None = None
+    available_bet: int | None = None
     category: str | None = None
     max_buy_quantity: int | None = None
     quota_value: float | None = None
     expire_reserve: str | None = None
     betting_method: str | None = None
     selected_bets: list | None = None
+    payment_id: int | None = None
     prize_draw_date: str | None = None
-    prize_draw_place: str | None = None  
+    prize_draw_place: str | None = None
+    publish_tax: float | None = None
+    total_value_return: float | None = None
     published: bool | None = None
     published_at: datetime | None = None
     updated_at: datetime | None = None
@@ -159,6 +167,7 @@ class RaffleResponse(RaffleBaseSchema):
     promotion: str
     description: str
     quantity: int
+    available_bet: int
     category: str
     max_buy_quantity: int
     quota_value: float
@@ -167,7 +176,10 @@ class RaffleResponse(RaffleBaseSchema):
     selected_bets: str
     prize_draw_date: str
     prize_draw_place: str
+    payment_id: int
     published: bool = False
+    publish_tax: float
+    total_value_return: float
     published_at: datetime | None = None
     created_at: datetime | None = None
     updated_at: datetime | None = None
@@ -224,7 +236,7 @@ class PurchaseResponse(PurchaseBaseSchema):
     bet: list
     
 class ListPurchaseResponse(BaseModel):
-    purchases: List[PurchaseResponse]
+    purchases: List[PurchaseResponse]    
 
 
 class PostBaseSchema(BaseModel):

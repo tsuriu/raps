@@ -10,6 +10,7 @@ from pymongo.errors import DuplicateKeyError
 from app.serializers.userSerializers import userEntity
 from app.serializers.purchaseSerializers import purchaseEntity, purchaseListEntity, purchaseResponseEntity
 from app.serializers.raffleSerializers import raffleEntity
+
 from app.controllers.purchaseController import auto_bet, check_bets
 from app.controllers.paymentController import MP
 
@@ -46,7 +47,7 @@ def create_purchase(purchase: schemas.CreatePurchaseSchema, slug: str, user_id: 
             
 
 
-    new_sorted_bets = { "$set": { 'selected_bets': [*raffle["selected_bets"], *purchase.bet]}}
+    new_sorted_bets = { "$set": { 'available_bet': raffle["available_bet"] - purchase.quantity , 'selected_bets': [*raffle["selected_bets"], *purchase.bet]}}
     Raffle.find_one_and_update(
         {'_id': ObjectId(raffle["id"])}, new_sorted_bets, return_document=ReturnDocument.AFTER
     )

@@ -6,15 +6,17 @@ from pydantic import BaseModel
 from bson.objectid import ObjectId
 
 from app.serializers.userSerializers import userEntity
+from app.controllers.parametersController import get_auth_params
 
 from .database import User
 from .schemas import UserBaseSchema
 from .config import settings
 
+auth_params = get_auth_params()
 
 class Settings(BaseModel):
-    authjwt_algorithm: str = settings.JWT_ALGORITHM
-    authjwt_decode_algorithms: List[str] = [settings.JWT_ALGORITHM]
+    authjwt_algorithm: str = auth_params["jwt_algorithm"]
+    authjwt_decode_algorithms: List[str] = [auth_params["jwt_algorithm"]]
     authjwt_denylist_enabled: bool = True
     authjwt_denylist_token_checks: set = {"access","refresh"}
     authjwt_token_location: set = {'cookies', 'headers'}
