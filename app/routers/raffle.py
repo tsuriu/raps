@@ -124,7 +124,7 @@ def get_raffles(limit: int = 10, page: int = 1, only_my: bool = True, search: st
 
 
 @router.get("/{id}")
-def get_raffle(id: str, user_id: str = Depends(require_user)):
+def get_raffle(id: str, payment_data: bool = False, user_id: str = Depends(require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"Invalid id: {id}")
@@ -144,6 +144,11 @@ def get_raffle(id: str, user_id: str = Depends(require_user)):
                             detail=f"No raffle with this id: {id} found")
         
     raffle = raffleListEntity(results)[0]
+    
+    if payment_data:
+        payment = MP().get_payment(payment_id=raffle["payment_id"])
+        
+        raffle["payment"] = payment
     
     return raffle
 
