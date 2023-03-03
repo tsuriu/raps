@@ -156,7 +156,16 @@ def get_purchase(id: str, payment_data: bool = False, user_id: str = Depends(req
     purchase = purchaseListEntity(results)[0]
     
     if payment_data:
-        payment = MP().get_payment(payment_id=purchase["payment_id"])
+        payment_res = MP().get_payment(payment_id=purchase["payment_id"])
+        
+        payment = {
+            "id": payment_res["id"],
+            "qrcode": payment_res["point_of_interaction"]["transaction_data"]["qr_code"],
+            "qr_code_base64": payment_res["point_of_interaction"]["transaction_data"]["qr_code_base64"],
+            "total_paid_amount": payment_res["transaction_details"]["total_paid_amount"],
+            "transaction_amount": payment_res["transaction_amount"],
+            "date_of_expiration": payment_res["date_of_expiration"]
+        }
         
         purchase["payment"] = payment
     
