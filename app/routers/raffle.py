@@ -12,6 +12,7 @@ from app.serializers.userSerializers import userEntity
 
 from app.controllers.paymentController import MP
 from app.controllers.parametersController import calc_raffle_taxes
+from app.controllers.winnerController import *
 
 from app.database import User
 from .. import schemas, oauth2
@@ -159,6 +160,28 @@ def get_raffle(id: str, payment_data: bool = False, user_id: str = Depends(requi
         raffle["payment"] = payment
     
     return raffle
+
+
+@router.get(
+    "winner/{slug}",
+    dependencies=[Depends(allow_raffle_creation)]
+)
+def get_winner(slug: str, lotery: int, user_id: str = Depends(require_user)):
+    raffle = raffleEntity(Raffle.find_one({"slug": slug}))
+    user = userEntity(User.find_one({"_id": ObjectId(user_id)}))
+    
+    if ObjectId(user_id) != ObjectId(raffle['user']) or user["role"] != "admin":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail=f"You no permission to this!")
+        
+    win_number = winner_number(raffle["quantity"], lotery)
+    
+    if chk_if_bet(raffle, win_number):
+        winner = get_winner(raffle, win_number)
+    else:
+        winner = "no_winner"
+    
+    return winner
 
 
 @router.put(
