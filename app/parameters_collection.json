@@ -1,7 +1,7 @@
 [
     {
         "config_description": "raffle_publishment_taxes",
-        "taxes": [
+        "data": [
             {"billingRate": 0 ,"rate": 5.25},
             {"billingRate": 100 ,"rate": 12.75},
             {"billingRate": 200 ,"rate": 20.25},
