@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import auth, user, raffle, purchase, noauth, hooks, payment
+from app.routers import auth, user, raffle, purchase, noauth, hooks, payment, parameters
 
 app = FastAPI()
 
@@ -27,6 +27,7 @@ app.include_router(raffle.router, tags=['Raffles'], prefix='/api/raffles')
 app.include_router(noauth.router, tags=['NoAuth'], prefix='/api/noauth')
 app.include_router(hooks.router, tags=["Hooks"], prefix='/api/hook')
 app.include_router(payment.router, tags=["Payments"], prefix='/api/payment')
+app.include_router(parameters.router, tags=["Parameters"], prefix="/api/config")
 
 
 @app.get("/api/healthchecker")

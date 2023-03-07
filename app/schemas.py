@@ -87,7 +87,7 @@ class RafflePromotionBaseSchame(BaseModel):
 
 class RaffleBaseSchema(BaseModel):
     user: str
-    image: str
+    image: Optional[list] = Field([])
     title: str
     slug: str
     phone: str
@@ -121,7 +121,7 @@ class RaffleBaseSchema(BaseModel):
         
 class RaffleUpdateSchema(BaseModel):
     user: str | None = None
-    image: str | None = None
+    image: list | None = None
     description: str | None = None
     phone: str | None = None
     prize: list | None = None

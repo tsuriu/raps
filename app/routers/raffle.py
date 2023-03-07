@@ -7,11 +7,12 @@ from app.database import Raffle
 
 from bson.objectid import ObjectId
 from pymongo.errors import DuplicateKeyError
-from app.serializers.raffleSerializers import prizeEntity, raffleResponseEntity, raffleEntity, raffleListEntity
-from app.serializers.userSerializers import userEntity
+from app.serializers.raffleSerializers import raffleEntity, raffleListEntity
+from app.serializers.userSerializers import userEntity, embeddedUserResponse_NoAuth
 
 from app.controllers.paymentController import MP
 from app.controllers.parametersController import calc_raffle_taxes
+from app.controllers.winnerController import *
 
 from app.database import User
 from .. import schemas, oauth2
@@ -124,7 +125,7 @@ def get_raffles(limit: int = 10, page: int = 1, only_my: bool = True, search: st
 
 
 @router.get("/{id}")
-def get_raffle(id: str, user_id: str = Depends(require_user)):
+def get_raffle(id: str, payment_data: bool = False, user_id: str = Depends(require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"Invalid id: {id}")
@@ -145,7 +146,42 @@ def get_raffle(id: str, user_id: str = Depends(require_user)):
         
     raffle = raffleListEntity(results)[0]
     
+    if payment_data:
+        payment_res = MP().get_payment(payment_id=raffle["payment_id"])
+        
+        payment = {
+            "id": payment_res["id"],
+            "qrcode": payment_res["point_of_interaction"]["transaction_data"]["qr_code"],
+            "qr_code_base64": payment_res["point_of_interaction"]["transaction_data"]["qr_code_base64"],
+            "total_paid_amount": payment_res["transaction_details"]["total_paid_amount"],
+            "transaction_amount": payment_res["transaction_amount"],
+            "date_of_expiration": payment_res["date_of_expiration"]
+        }
+        raffle["payment"] = payment
+    
     return raffle
+
+
+@router.get(
+    "/winner/{slug}",
+    dependencies=[Depends(allow_raffle_creation)]
+)
+def get_winner(slug: str, lotery: int, user_id: str = Depends(require_user)):
+    raffle = raffleEntity(Raffle.find_one({"slug": slug}))
+    user = userEntity(User.find_one({'_id': ObjectId(user_id)}))
+    
+    if not (ObjectId(user_id) != ObjectId(raffle['user']) or user["role"] != "admin"):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail=f"You no permission to this!")
+        
+    win_number = winner_number(raffle["quantity"], lotery)
+    
+    if chk_if_bet(raffle, win_number):
+        winner = get_winner_purchase(slug, win_number)
+    else:
+        winner = "no_winner"
+    
+    return winner
 
 
 @router.put(

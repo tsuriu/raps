@@ -135,7 +135,7 @@ def get_purchases(limit: int = 10, page: int = 1, only_my: bool = False, search:
     return {'status': 'success', 'results': len(purchases), 'purchases': purchases}
 
 @router.get("/{id}")
-def get_purchase(id: str, user_id: str = Depends(require_user)):
+def get_purchase(id: str, payment_data: bool = False, user_id: str = Depends(require_user)):
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f"Invalid id: {id}")
@@ -154,6 +154,20 @@ def get_purchase(id: str, user_id: str = Depends(require_user)):
                             detail=f"No purchase with this id: {id} found")
         
     purchase = purchaseListEntity(results)[0]
+    
+    if payment_data:
+        payment_res = MP().get_payment(payment_id=purchase["payment_id"])
+        
+        payment = {
+            "id": payment_res["id"],
+            "qrcode": payment_res["point_of_interaction"]["transaction_data"]["qr_code"],
+            "qr_code_base64": payment_res["point_of_interaction"]["transaction_data"]["qr_code_base64"],
+            "total_paid_amount": payment_res["transaction_details"]["total_paid_amount"],
+            "transaction_amount": payment_res["transaction_amount"],
+            "date_of_expiration": payment_res["date_of_expiration"]
+        }
+        
+        purchase["payment"] = payment
     
     return purchase
 

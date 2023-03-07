@@ -6,7 +6,7 @@ def get_raffle_taxes():
 
 
 def calc_raffle_taxes(raffle):
-    taxes = get_raffle_taxes()["taxes"]
+    taxes = get_raffle_taxes()["data"]
     raffleTotalValue = raffle["quantity"] * raffle["quota_value"]
     publishRate = 0
     
@@ -28,7 +28,8 @@ def get_admin_payment_auth_token(platform):
         return auth["dev_token"]
     else:
         return auth["prd_token"]
-    
+
+
 def get_auth_params():
     auth_params = Parameters.find_one({"config_description":"auth_config_elements"})
     
